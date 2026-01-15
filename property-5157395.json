@@ -4,105 +4,105 @@
       "property_uuid": "bbb8185d-2ee3-48a4-ba7f-8fecaba6e549",
       "images": [
         {
-          "url": "venta-594a5fafcf-1.png",
+          "url": "venta-594a5fafcf-1.webp",
           "order": 1,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-cca6e41506-2.png",
+          "url": "venta-cca6e41506-2.webp",
           "order": 2,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-130542346a-3.png",
+          "url": "venta-130542346a-3.webp",
           "order": 3,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-a8869bc277-4.png",
+          "url": "venta-a8869bc277-4.webp",
           "order": 4,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-ce53e7022d-5.png",
+          "url": "venta-ce53e7022d-5.webp",
           "order": 5,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-a436d7d0d8-6.png",
+          "url": "venta-a436d7d0d8-6.webp",
           "order": 6,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-41f6746981-7.png",
+          "url": "venta-41f6746981-7.webp",
           "order": 7,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-b1c2a02741-8.png",
+          "url": "venta-b1c2a02741-8.webp",
           "order": 8,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-26226f756d-9.png",
+          "url": "venta-26226f756d-9.webp",
           "order": 9,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-386bf4661a-13.png",
+          "url": "venta-386bf4661a-13.webp",
           "order": 10,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-facd6b7348-11.png",
+          "url": "venta-facd6b7348-11.webp",
           "order": 11,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-49daed9146-12.png",
+          "url": "venta-49daed9146-12.webp",
           "order": 12,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-50881cb0e8-10.png",
+          "url": "venta-50881cb0e8-10.webp",
           "order": 13,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-63cbf53955-14.png",
+          "url": "venta-63cbf53955-14.webp",
           "order": 14,
           "type_img": 1,
           "title": null,
           "comment": null
         },
         {
-          "url": "venta-1a107f0224-16.png",
+          "url": "venta-1a107f0224-16.webp",
           "order": 16,
           "type_img": 1,
           "title": null,
@@ -134,8 +134,8 @@
       ],
       "nid": 49695472717,
       "property_id": "5157395",
-      "titulo": "Dubái - Apartamento en Venta en La Cabaña, Bello",
-      "descripcion": "Apartamento en venta de 79m2, con vista exterior, ubicado en un 5to piso (Torre 1 Apto 501). Consta de 3 habitaciones, 2 baños, sala comedor, cocina integral, balcón y zona de lavandería. Tiene piso cerámico en todas sus zonas. Cerca a almacenes de cadena D1; cerca a colegio Institución Educativa Liceo Antioqueño ;  Vías de acceso por la Carrera 60.",
+      "titulo": "Apartamento en Venta en Las Cabañas, Bello",
+      "descripcion": "Apartamento en venta de 79m2, con vista exterior, ubicado en un 5to piso (Torre 1 Apto 501). Consta de 3 habitaciones, 2 baños, sala comedor, cocina integral, balcón y zona de lavandería. Tiene piso cerámico en todas sus zonas. Cerca a almacenes de cadena D1; cerca a colegio Institución Educativa Liceo Antioqueño.",
       "detalles_propiedad": {
         "area": 79.0,
         "tipo_inmueble": "Apartamento",
@@ -145,7 +145,7 @@
         "precio_venta": 328000000.0,
         "precio_anterior": null,
         "discount_rate": null,
-        "barriocomun": "La Cabaña",
+        "barriocomun": "Las Cabañas",
         "meta_title": "",
         "correo": "alexis9229@hotmail.com",
         "conjunto_edificio": "Dubai",
@@ -162,7 +162,7 @@
         "garajes": 0,
         "telefono": "+573122610244",
         "anos_antiguedad": 10,
-        "last_admin_price": 60000,
+        "last_admin_price": 0,
         "is_private": 1,
         "zona_metropolitana": "Valle de Aburrá",
         "contacto_zona": "+57 3025673648",
@@ -173,17 +173,16 @@
         "longitud": -75.565495
       },
       "caracteristicas_propiedad": [
-        "Interior/bloque/torre del inmueble",
+        "Interior",
         "Balcón",
         "Conjunto Cerrado",
-        "Instalación de gas",
-        "Portería"
+        "Instalación de gas"
       ]
     },
     "icon_details": {
       "building_details": {
         "name_set": "Dubai",
-        "admin_price": 60000,
+        "admin_price": 0,
         "stratum": "3",
         "property_age": 10,
         "remodeled": 0
@@ -207,8 +206,7 @@
     "sitios_interes": {
       "centro_comercial": [],
       "supermercados": [],
-      "parques": [],
-      "transmilenio": []
+      "parques": []
     }
   },
   "success": true

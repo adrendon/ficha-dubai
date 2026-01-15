@@ -497,9 +497,6 @@ const renderServices = (services) => {
 const renderContact = (property) => {
   const phone = property.telefono || "";
   const email = property.correo || "";
-  const name = property.nombre_contacto || "Equipo comercial";
-
-  $("#contact-name").textContent = name;
 
   const phoneLink = $("#contact-phone");
   const phoneText = $("#contact-phone-text");
@@ -657,11 +654,6 @@ const populatePage = (data) => {
   renderContact(property);
   renderMap(property);
 
-  $("#generated-date").textContent = new Date().toLocaleDateString("es-CO", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 };
 
 const loadData = async () => {
