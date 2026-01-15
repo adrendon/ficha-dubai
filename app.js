@@ -263,6 +263,12 @@ const renderGallery = (images) => {
     mainImage.src = resolvedImages[index];
     mainImage.alt = `Imagen ${index + 1}`;
     updateGalleryThumbHighlights();
+    
+    // Show 360 button only on first image
+    const btn360Container = $("#btn-360-container");
+    if (btn360Container && btn360Container.dataset.has360 === "true") {
+      btn360Container.style.display = index === 0 ? "flex" : "none";
+    }
   };
 
   const updateGalleryThumbHighlights = () => {
@@ -625,14 +631,20 @@ const populatePage = (data) => {
   const tour360Btn = $("#property-360-btn");
   
   if (property.url_360) {
-    if (btn360Container) btn360Container.style.display = "flex";
+    if (btn360Container) {
+      btn360Container.style.display = "flex";
+      btn360Container.dataset.has360 = "true";
+    }
     if (tour360) tour360.href = property.url_360;
     if (tour360Btn) {
       tour360Btn.href = property.url_360;
       tour360Btn.style.display = "inline-flex";
     }
   } else {
-    if (btn360Container) btn360Container.style.display = "none";
+    if (btn360Container) {
+      btn360Container.style.display = "none";
+      btn360Container.dataset.has360 = "false";
+    }
     if (tour360Btn) tour360Btn.style.display = "none";
   }
 
