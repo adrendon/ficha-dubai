@@ -1,0 +1,215 @@
+{
+  "data": {
+    "property": {
+      "property_uuid": "bbb8185d-2ee3-48a4-ba7f-8fecaba6e549",
+      "images": [
+        {
+          "url": "venta-594a5fafcf-1.png",
+          "order": 1,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-cca6e41506-2.png",
+          "order": 2,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-130542346a-3.png",
+          "order": 3,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-a8869bc277-4.png",
+          "order": 4,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-ce53e7022d-5.png",
+          "order": 5,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-a436d7d0d8-6.png",
+          "order": 6,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-41f6746981-7.png",
+          "order": 7,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-b1c2a02741-8.png",
+          "order": 8,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-26226f756d-9.png",
+          "order": 9,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-386bf4661a-13.png",
+          "order": 10,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-facd6b7348-11.png",
+          "order": 11,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-49daed9146-12.png",
+          "order": 12,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-50881cb0e8-10.png",
+          "order": 13,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-63cbf53955-14.png",
+          "order": 14,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        },
+        {
+          "url": "venta-1a107f0224-16.png",
+          "order": 16,
+          "type_img": 1,
+          "title": null,
+          "comment": null
+        }
+      ],
+      "url_360": "https://apartamento-dubai-production.up.railway.app/?m=bE7cSwnyKad",
+      "servicios": [
+        {
+          "servicio": "gas",
+          "estrato": 3,
+          "valor": 20884
+        },
+        {
+          "servicio": "energia",
+          "estrato": 3,
+          "valor": 107130
+        },
+        {
+          "servicio": "acueducto",
+          "estrato": 3,
+          "valor": 100705
+        },
+        {
+          "servicio": "internet_tv",
+          "estrato": 3,
+          "valor": 123900
+        }
+      ],
+      "nid": 49695472717,
+      "property_id": "5157395",
+      "titulo": "Dubái - Apartamento en Venta en La Cabaña, Bello",
+      "descripcion": "Apartamento en venta de 79m2, con vista exterior, ubicado en un 5to piso (Torre 1 Apto 501). Consta de 3 habitaciones, 2 baños, sala comedor, cocina integral, balcón y zona de lavandería. Tiene piso cerámico en todas sus zonas. Cerca a almacenes de cadena D1; cerca a colegio Institución Educativa Liceo Antioqueño ;  Vías de acceso por la Carrera 60.",
+      "detalles_propiedad": {
+        "area": 79.0,
+        "tipo_inmueble": "Apartamento",
+        "estrato": "3",
+        "conjunto": "Dubai",
+        "direccion": "CARRERA 58AA 31-166",
+        "precio_venta": 328000000.0,
+        "precio_anterior": null,
+        "discount_rate": null,
+        "barriocomun": "La Cabaña",
+        "meta_title": "",
+        "correo": "alexis9229@hotmail.com",
+        "conjunto_edificio": "Dubai",
+        "inventory_type_id": 2,
+        "property_moment_id": 2,
+        "publicado": 2,
+        "ciudad": "Bello",
+        "remodelation": 0,
+        "num_habitaciones": 3,
+        "num_ascensores": 0,
+        "num_piso": 5,
+        "flat": 5,
+        "baños": 2,
+        "garajes": 0,
+        "telefono": "+573122610244",
+        "anos_antiguedad": 10,
+        "last_admin_price": 60000,
+        "is_private": 1,
+        "zona_metropolitana": "Valle de Aburrá",
+        "contacto_zona": "+57 3025673648",
+        "zona_mediana": "LA CABAÑA",
+        "date_publication": "2025-12-30 12:08:20",
+        "date_publication_full": "2025-12-30 12:08:20",
+        "latitud": 6.319948999999999,
+        "longitud": -75.565495
+      },
+      "caracteristicas_propiedad": [
+        "Interior/bloque/torre del inmueble",
+        "Balcón",
+        "Conjunto Cerrado",
+        "Instalación de gas",
+        "Portería"
+      ]
+    },
+    "icon_details": {
+      "building_details": {
+        "name_set": "Dubai",
+        "admin_price": 60000,
+        "stratum": "3",
+        "property_age": 10,
+        "remodeled": 0
+      },
+      "distribution_details": {
+        "area": 79.0,
+        "number_rooms": 3,
+        "toilets": 2,
+        "garages": 0,
+        "elevator_number": 0
+      },
+      "other_details": {
+        "tipo_inmueble": "Apartamento",
+        "deposit": 0,
+        "reception": 1,
+        "laundry_area": 0,
+        "gas": 1,
+        "visitor_parking": 0
+      }
+    },
+    "sitios_interes": {
+      "centro_comercial": [],
+      "supermercados": [],
+      "parques": [],
+      "transmilenio": []
+    }
+  },
+  "success": true
+}
