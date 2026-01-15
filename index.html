@@ -97,6 +97,13 @@
                 Vista 360°
               </a>
             </div>
+            <!-- Navigation arrows on main image -->
+            <button id="gallery-main-prev" class="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors z-10">
+              <span class="material-icons-outlined">chevron_left</span>
+            </button>
+            <button id="gallery-main-next" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors z-10">
+              <span class="material-icons-outlined">chevron_right</span>
+            </button>
             <div id="gallery-count" class="absolute bottom-4 right-4 flex gap-2">
               <span class="bg-black/50 backdrop-blur-md text-white px-3 py-1 rounded-lg text-xs font-medium flex items-center gap-1">
                 <span class="material-icons-outlined text-sm">photo_library</span>
@@ -104,7 +111,20 @@
               </span>
             </div>
           </div>
-          <div id="gallery-thumbnails" class="grid grid-cols-5 md:grid-cols-8 gap-2"></div>
+          <!-- Thumbnails with pagination -->
+          <div class="relative">
+            <div class="flex items-center gap-2">
+              <button id="thumb-prev" class="flex-shrink-0 p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                <span class="material-icons-outlined text-xl">chevron_left</span>
+              </button>
+              <div id="gallery-thumbnails" class="flex-1 grid grid-cols-4 md:grid-cols-8 gap-2"></div>
+              <button id="thumb-next" class="flex-shrink-0 p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                <span class="material-icons-outlined text-xl">chevron_right</span>
+              </button>
+            </div>
+            <!-- Pagination dots -->
+            <div id="thumb-pagination" class="flex justify-center gap-2 mt-3"></div>
+          </div>
         </section>
 
         <!-- Description & Details -->
@@ -230,19 +250,33 @@
     <button id="lightbox-close" class="absolute top-4 right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10">
       <span class="material-icons-outlined text-2xl">close</span>
     </button>
-    <button id="lightbox-prev" class="absolute left-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10">
-      <span class="material-icons-outlined text-3xl">chevron_left</span>
+    <button id="lightbox-prev" class="absolute left-4 top-1/2 -translate-y-1/2 p-3 md:p-4 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10">
+      <span class="material-icons-outlined text-2xl md:text-3xl">chevron_left</span>
     </button>
-    <button id="lightbox-next" class="absolute right-4 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10">
-      <span class="material-icons-outlined text-3xl">chevron_right</span>
+    <button id="lightbox-next" class="absolute right-4 top-1/2 -translate-y-1/2 p-3 md:p-4 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10">
+      <span class="material-icons-outlined text-2xl md:text-3xl">chevron_right</span>
     </button>
-    <div class="relative max-w-[90vw] max-h-[90vh] flex items-center justify-center">
-      <img id="lightbox-image" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" src="" alt=""/>
+    <div class="relative max-w-[90vw] max-h-[70vh] md:max-h-[75vh] flex items-center justify-center">
+      <img id="lightbox-image" class="max-w-full max-h-[65vh] md:max-h-[70vh] object-contain rounded-lg shadow-2xl" src="" alt=""/>
     </div>
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4">
-      <span id="lightbox-counter" class="text-white/80 text-sm font-medium bg-black/50 px-4 py-2 rounded-full">1 / 10</span>
+    <!-- Lightbox bottom controls -->
+    <div class="absolute bottom-4 md:bottom-6 left-0 right-0 flex flex-col items-center gap-3">
+      <!-- Thumbnails with pagination -->
+      <div class="flex items-center gap-2 max-w-[95vw] md:max-w-[80vw]">
+        <button id="lightbox-thumb-prev" class="flex-shrink-0 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+          <span class="material-icons-outlined">chevron_left</span>
+        </button>
+        <div id="lightbox-thumbnails" class="flex gap-2 p-2 bg-black/50 rounded-xl overflow-hidden"></div>
+        <button id="lightbox-thumb-next" class="flex-shrink-0 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+          <span class="material-icons-outlined">chevron_right</span>
+        </button>
+      </div>
+      <!-- Counter and pagination dots -->
+      <div class="flex items-center gap-3">
+        <span id="lightbox-counter" class="text-white/80 text-sm font-medium bg-black/50 px-4 py-2 rounded-full">1 / 10</span>
+        <div id="lightbox-pagination" class="flex gap-1.5"></div>
+      </div>
     </div>
-    <div id="lightbox-thumbnails" class="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-2 max-w-[80vw] overflow-x-auto p-2 bg-black/50 rounded-xl"></div>
   </div>
 
   <script src="app.js" defer></script>

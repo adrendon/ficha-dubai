@@ -3,6 +3,14 @@ const $ = (selector) => document.querySelector(selector);
 // Lightbox state
 let lightboxImages = [];
 let lightboxCurrentIndex = 0;
+let lightboxThumbPage = 0;
+const LIGHTBOX_THUMBS_PER_PAGE = 8;
+
+// Gallery state
+let galleryImages = [];
+let galleryCurrentIndex = 0;
+let galleryThumbPage = 0;
+let galleryThumbsPerPage = 8; // Will be adjusted for mobile
 
 const formatCurrency = (value) => {
   if (!value && value !== 0) return "--";
@@ -18,11 +26,38 @@ const formatNumber = (value) => {
   return new Intl.NumberFormat("es-CO").format(value);
 };
 
+// ============ PAGINATION HELPERS ============
+
+const getThumbsPerPage = () => {
+  return window.innerWidth < 768 ? 4 : 8;
+};
+
+const getTotalPages = (totalItems, perPage) => {
+  return Math.ceil(totalItems / perPage);
+};
+
+const renderPaginationDots = (container, currentPage, totalPages, onPageClick, isLight = false) => {
+  container.innerHTML = "";
+  if (totalPages <= 1) return;
+  
+  for (let i = 0; i < totalPages; i++) {
+    const dot = document.createElement("button");
+    const activeClass = isLight 
+      ? (i === currentPage ? "bg-white" : "bg-white/40 hover:bg-white/60")
+      : (i === currentPage ? "bg-primary" : "bg-slate-300 dark:bg-slate-600 hover:bg-slate-400");
+    dot.className = `w-2.5 h-2.5 rounded-full transition-colors ${activeClass}`;
+    dot.addEventListener("click", () => onPageClick(i));
+    container.appendChild(dot);
+  }
+};
+
 // ============ LIGHTBOX FUNCTIONS ============
 
 const openLightbox = (index) => {
   const lightbox = $("#lightbox");
   lightboxCurrentIndex = index;
+  // Calculate which page this image is on
+  lightboxThumbPage = Math.floor(index / LIGHTBOX_THUMBS_PER_PAGE);
   updateLightboxImage();
   renderLightboxThumbnails();
   lightbox.classList.remove("hidden");
@@ -48,42 +83,101 @@ const updateLightboxImage = () => {
   }
   
   // Update thumbnail highlights
+  updateLightboxThumbHighlights();
+};
+
+const updateLightboxThumbHighlights = () => {
   const thumbs = document.querySelectorAll("#lightbox-thumbnails .lightbox-thumb");
+  const startIndex = lightboxThumbPage * LIGHTBOX_THUMBS_PER_PAGE;
+  
   thumbs.forEach((thumb, i) => {
-    thumb.classList.toggle("ring-2", i === lightboxCurrentIndex);
-    thumb.classList.toggle("ring-white", i === lightboxCurrentIndex);
-    thumb.classList.toggle("opacity-50", i !== lightboxCurrentIndex);
+    const actualIndex = startIndex + i;
+    const isActive = actualIndex === lightboxCurrentIndex;
+    thumb.classList.toggle("ring-2", isActive);
+    thumb.classList.toggle("ring-white", isActive);
+    thumb.classList.toggle("opacity-50", !isActive);
   });
 };
 
 const renderLightboxThumbnails = () => {
   const container = $("#lightbox-thumbnails");
+  const paginationContainer = $("#lightbox-pagination");
+  const prevBtn = $("#lightbox-thumb-prev");
+  const nextBtn = $("#lightbox-thumb-next");
+  
   container.innerHTML = "";
   
-  lightboxImages.forEach((src, index) => {
+  const totalPages = getTotalPages(lightboxImages.length, LIGHTBOX_THUMBS_PER_PAGE);
+  const startIndex = lightboxThumbPage * LIGHTBOX_THUMBS_PER_PAGE;
+  const endIndex = Math.min(startIndex + LIGHTBOX_THUMBS_PER_PAGE, lightboxImages.length);
+  
+  for (let i = startIndex; i < endIndex; i++) {
+    const src = lightboxImages[i];
     const thumb = document.createElement("div");
-    thumb.className = `lightbox-thumb w-16 h-16 rounded-lg overflow-hidden cursor-pointer transition-all flex-shrink-0 ${index === lightboxCurrentIndex ? "ring-2 ring-white" : "opacity-50 hover:opacity-80"}`;
+    const isActive = i === lightboxCurrentIndex;
+    thumb.className = `lightbox-thumb w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden cursor-pointer transition-all flex-shrink-0 ${isActive ? "ring-2 ring-white" : "opacity-50 hover:opacity-80"}`;
     const img = document.createElement("img");
     img.src = src;
-    img.alt = `Miniatura ${index + 1}`;
+    img.alt = `Miniatura ${i + 1}`;
     img.className = "w-full h-full object-cover";
     thumb.appendChild(img);
     thumb.addEventListener("click", () => {
-      lightboxCurrentIndex = index;
+      lightboxCurrentIndex = i;
       updateLightboxImage();
     });
     container.appendChild(thumb);
-  });
+  }
+  
+  // Update navigation buttons
+  if (prevBtn) prevBtn.disabled = lightboxThumbPage === 0;
+  if (nextBtn) nextBtn.disabled = lightboxThumbPage >= totalPages - 1;
+  
+  // Render pagination dots
+  if (paginationContainer) {
+    renderPaginationDots(paginationContainer, lightboxThumbPage, totalPages, (page) => {
+      lightboxThumbPage = page;
+      renderLightboxThumbnails();
+    }, true);
+  }
 };
 
 const lightboxNext = () => {
   lightboxCurrentIndex = (lightboxCurrentIndex + 1) % lightboxImages.length;
-  updateLightboxImage();
+  // Auto-advance page if needed
+  const newPage = Math.floor(lightboxCurrentIndex / LIGHTBOX_THUMBS_PER_PAGE);
+  if (newPage !== lightboxThumbPage) {
+    lightboxThumbPage = newPage;
+    renderLightboxThumbnails();
+  } else {
+    updateLightboxImage();
+  }
 };
 
 const lightboxPrev = () => {
   lightboxCurrentIndex = (lightboxCurrentIndex - 1 + lightboxImages.length) % lightboxImages.length;
-  updateLightboxImage();
+  // Auto-advance page if needed
+  const newPage = Math.floor(lightboxCurrentIndex / LIGHTBOX_THUMBS_PER_PAGE);
+  if (newPage !== lightboxThumbPage) {
+    lightboxThumbPage = newPage;
+    renderLightboxThumbnails();
+  } else {
+    updateLightboxImage();
+  }
+};
+
+const lightboxThumbNextPage = () => {
+  const totalPages = getTotalPages(lightboxImages.length, LIGHTBOX_THUMBS_PER_PAGE);
+  if (lightboxThumbPage < totalPages - 1) {
+    lightboxThumbPage++;
+    renderLightboxThumbnails();
+  }
+};
+
+const lightboxThumbPrevPage = () => {
+  if (lightboxThumbPage > 0) {
+    lightboxThumbPage--;
+    renderLightboxThumbnails();
+  }
 };
 
 const initLightbox = () => {
@@ -91,12 +185,16 @@ const initLightbox = () => {
   const closeBtn = $("#lightbox-close");
   const prevBtn = $("#lightbox-prev");
   const nextBtn = $("#lightbox-next");
+  const thumbPrevBtn = $("#lightbox-thumb-prev");
+  const thumbNextBtn = $("#lightbox-thumb-next");
   
   if (!lightbox) return;
   
   closeBtn?.addEventListener("click", closeLightbox);
   prevBtn?.addEventListener("click", lightboxPrev);
   nextBtn?.addEventListener("click", lightboxNext);
+  thumbPrevBtn?.addEventListener("click", lightboxThumbPrevPage);
+  thumbNextBtn?.addEventListener("click", lightboxThumbNextPage);
   
   // Close on backdrop click
   lightbox.addEventListener("click", (e) => {
@@ -140,54 +238,151 @@ const renderGallery = (images) => {
   const mainImage = $("#gallery-main-image");
   const thumbContainer = $("#gallery-thumbnails");
   const photoCount = $("#photo-count");
-  thumbContainer.innerHTML = "";
+  const paginationContainer = $("#thumb-pagination");
+  const prevBtn = $("#thumb-prev");
+  const nextBtn = $("#thumb-next");
+  const mainPrevBtn = $("#gallery-main-prev");
+  const mainNextBtn = $("#gallery-main-next");
 
   const resolvedImages = images.length
     ? images.map((img) => (img.startsWith("http") ? img : `images/${img}`))
     : ["https://via.placeholder.com/1200x750?text=Sin+imagen"];
 
-  // Store images for lightbox
+  // Store images for lightbox and gallery
   lightboxImages = resolvedImages;
+  galleryImages = resolvedImages;
+  galleryThumbsPerPage = getThumbsPerPage();
 
   // Update photo count
   if (photoCount) {
     photoCount.textContent = resolvedImages.length;
   }
 
-  let currentIndex = 0;
-
-  const setActive = (src, index) => {
-    currentIndex = index;
-    mainImage.src = src;
+  const setActive = (index) => {
+    galleryCurrentIndex = index;
+    mainImage.src = resolvedImages[index];
     mainImage.alt = `Imagen ${index + 1}`;
-    thumbContainer.querySelectorAll(".thumbnail-item").forEach((thumb, i) => {
-      thumb.classList.toggle("ring-2", i === index);
-      thumb.classList.toggle("ring-primary", i === index);
-      thumb.classList.toggle("opacity-80", i !== index);
+    updateGalleryThumbHighlights();
+  };
+
+  const updateGalleryThumbHighlights = () => {
+    const thumbs = thumbContainer.querySelectorAll(".thumbnail-item");
+    const startIndex = galleryThumbPage * galleryThumbsPerPage;
+    
+    thumbs.forEach((thumb, i) => {
+      const actualIndex = startIndex + i;
+      const isActive = actualIndex === galleryCurrentIndex;
+      thumb.classList.toggle("ring-2", isActive);
+      thumb.classList.toggle("ring-primary", isActive);
+      thumb.classList.toggle("opacity-80", !isActive);
+      thumb.classList.toggle("opacity-100", isActive);
     });
   };
 
+  const renderThumbnails = () => {
+    thumbContainer.innerHTML = "";
+    galleryThumbsPerPage = getThumbsPerPage();
+    
+    const totalPages = getTotalPages(resolvedImages.length, galleryThumbsPerPage);
+    const startIndex = galleryThumbPage * galleryThumbsPerPage;
+    const endIndex = Math.min(startIndex + galleryThumbsPerPage, resolvedImages.length);
+    
+    for (let i = startIndex; i < endIndex; i++) {
+      const src = resolvedImages[i];
+      const thumb = document.createElement("div");
+      const isActive = i === galleryCurrentIndex;
+      thumb.className = `thumbnail-item aspect-square rounded-md overflow-hidden bg-slate-100 dark:bg-slate-700 cursor-pointer transition ${isActive ? "ring-2 ring-primary opacity-100" : "opacity-80 hover:opacity-100"}`;
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = `Miniatura ${i + 1}`;
+      img.className = "w-full h-full object-cover";
+      thumb.appendChild(img);
+      thumb.addEventListener("click", () => setActive(i));
+      thumb.addEventListener("dblclick", () => openLightbox(i));
+      thumbContainer.appendChild(thumb);
+    }
+    
+    // Update navigation buttons
+    if (prevBtn) prevBtn.disabled = galleryThumbPage === 0;
+    if (nextBtn) nextBtn.disabled = galleryThumbPage >= totalPages - 1;
+    
+    // Render pagination dots
+    if (paginationContainer) {
+      renderPaginationDots(paginationContainer, galleryThumbPage, totalPages, (page) => {
+        galleryThumbPage = page;
+        renderThumbnails();
+      }, false);
+    }
+  };
+
+  const galleryNextImage = () => {
+    const newIndex = (galleryCurrentIndex + 1) % resolvedImages.length;
+    setActive(newIndex);
+    // Auto-advance page if needed
+    const newPage = Math.floor(newIndex / galleryThumbsPerPage);
+    if (newPage !== galleryThumbPage) {
+      galleryThumbPage = newPage;
+      renderThumbnails();
+    }
+  };
+
+  const galleryPrevImage = () => {
+    const newIndex = (galleryCurrentIndex - 1 + resolvedImages.length) % resolvedImages.length;
+    setActive(newIndex);
+    // Auto-advance page if needed
+    const newPage = Math.floor(newIndex / galleryThumbsPerPage);
+    if (newPage !== galleryThumbPage) {
+      galleryThumbPage = newPage;
+      renderThumbnails();
+    }
+  };
+
+  const thumbNextPage = () => {
+    const totalPages = getTotalPages(resolvedImages.length, galleryThumbsPerPage);
+    if (galleryThumbPage < totalPages - 1) {
+      galleryThumbPage++;
+      renderThumbnails();
+    }
+  };
+
+  const thumbPrevPage = () => {
+    if (galleryThumbPage > 0) {
+      galleryThumbPage--;
+      renderThumbnails();
+    }
+  };
+
+  // Event listeners for navigation
+  if (prevBtn) {
+    prevBtn.onclick = thumbPrevPage;
+  }
+  if (nextBtn) {
+    nextBtn.onclick = thumbNextPage;
+  }
+  if (mainPrevBtn) {
+    mainPrevBtn.onclick = galleryPrevImage;
+  }
+  if (mainNextBtn) {
+    mainNextBtn.onclick = galleryNextImage;
+  }
+
   // Make main image clickable to open lightbox
   mainImage.classList.add("cursor-pointer");
-  mainImage.addEventListener("click", () => {
-    openLightbox(currentIndex);
+  mainImage.onclick = () => openLightbox(galleryCurrentIndex);
+
+  // Handle window resize
+  window.addEventListener("resize", () => {
+    const newPerPage = getThumbsPerPage();
+    if (newPerPage !== galleryThumbsPerPage) {
+      galleryThumbsPerPage = newPerPage;
+      galleryThumbPage = Math.floor(galleryCurrentIndex / galleryThumbsPerPage);
+      renderThumbnails();
+    }
   });
 
-  resolvedImages.forEach((src, index) => {
-    const thumb = document.createElement("div");
-    thumb.className = "thumbnail-item aspect-square rounded-md overflow-hidden bg-slate-100 dark:bg-slate-700 cursor-pointer opacity-80 hover:opacity-100 transition";
-    const img = document.createElement("img");
-    img.src = src;
-    img.alt = `Miniatura ${index + 1}`;
-    img.className = "w-full h-full object-cover";
-    thumb.appendChild(img);
-    thumb.addEventListener("click", () => setActive(src, index));
-    // Double click to open lightbox
-    thumb.addEventListener("dblclick", () => openLightbox(index));
-    thumbContainer.appendChild(thumb);
-  });
-
-  setActive(resolvedImages[0], 0);
+  // Initial render
+  renderThumbnails();
+  setActive(0);
 };
 
 const renderDetails = (property) => {
