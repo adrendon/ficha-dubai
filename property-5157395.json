@@ -114,22 +114,22 @@
         {
           "servicio": "gas",
           "estrato": 3,
-          "valor": 20884
+          "valor": 25000
         },
         {
           "servicio": "energia",
           "estrato": 3,
-          "valor": 107130
+          "valor": 90000
         },
         {
           "servicio": "acueducto",
           "estrato": 3,
-          "valor": 100705
+          "valor": 80000
         },
         {
           "servicio": "internet_tv",
           "estrato": 3,
-          "valor": 123900
+          "valor": 125000
         }
       ],
       "nid": 49695472717,
