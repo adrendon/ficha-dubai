@@ -119,12 +119,12 @@
         {
           "servicio": "energia",
           "estrato": 3,
-          "valor": 90000
+          "valor": 100000
         },
         {
           "servicio": "acueducto",
           "estrato": 3,
-          "valor": 80000
+          "valor": 115000
         },
         {
           "servicio": "internet_tv",
