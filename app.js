@@ -503,21 +503,27 @@ const renderContact = (property) => {
   if (phoneText) {
     phoneText.textContent = phone ? `Llamar ${phone}` : "Llamar";
   }
-  phoneLink.href = phone ? `tel:${phone}` : "#";
+  if (phoneLink) {
+    phoneLink.href = phone ? `tel:${phone}` : "#";
+  }
 
   const emailLink = $("#contact-email");
-  emailLink.href = email ? `mailto:${email}` : "#";
+  if (emailLink) {
+    emailLink.href = email ? `mailto:${email}` : "#";
+  }
 
   const whatsappLink = $("#contact-whatsapp");
   if (phone) {
     const cleaned = phone.replace(/\D/g, "");
-    whatsappLink.href = `https://wa.me/57${cleaned}`;
+    if (whatsappLink) whatsappLink.href = `https://wa.me/57${cleaned}`;
   } else {
-    whatsappLink.href = "#";
+    if (whatsappLink) whatsappLink.href = "#";
   }
 
-  $("#contact-building").textContent = property.conjunto || "--";
-  $("#contact-admin").textContent = property.administracion
+  const contactBuilding = $("#contact-building");
+  if (contactBuilding) contactBuilding.textContent = property.conjunto || "--";
+  const contactAdmin = $("#contact-admin");
+  if (contactAdmin) contactAdmin.textContent = property.administracion
     ? formatCurrency(property.administracion)
     : "--";
 };
@@ -666,13 +672,17 @@ const loadData = async () => {
   }
 
   try {
-    const response = await fetch("property-5157395.json");
-    if (!response.ok) throw new Error("No se pudo cargar el JSON");
+    const response = await fetch("./property-5157395.json");
+    if (!response.ok) {
+      const bodyText = await response.text().catch(() => null);
+      throw new Error(`HTTP ${response.status} ${response.statusText}${bodyText ? ' - ' + bodyText : ''}`);
+    }
     const data = await response.json();
     populatePage(data);
   } catch (error) {
     $("#property-title").textContent = "No se pudo cargar el inmueble";
     $("#property-description").textContent = "Revisa que el archivo property-5157395.json esté disponible.";
+    $("#property-address").textContent = "Dirección no disponible";
   }
 };
 
