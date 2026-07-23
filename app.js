@@ -89,12 +89,12 @@ function renderGallery(images, ui) {
     div.className = i === 0 ? "g-main relative cursor-pointer overflow-hidden" : "g-secondary relative cursor-pointer overflow-hidden";
     div.innerHTML = `<img src="${imgs[i]}" alt=""/>`;
     if (i === slots - 1 && imgs.length > 5) {
-      div.innerHTML += `<div class="absolute inset-0 bg-black/50 flex items-center justify-center hover:bg-black/60 transition-colors"><div class="text-center text-white"><span class="material-symbols-outlined text-3xl">grid_view</span><p class="font-bold mt-1">+${imgs.length - 4} ${ui.galeria_fotos}</p></div></div>`;
+      div.innerHTML += `<div class="absolute inset-0 bg-black/50 flex items-center justify-center hover:bg-black/60 transition-colors"><div class="text-center text-white"><span class="material-symbols-outlined text-3xl">grid_view</span><p class="font-bold mt-1">+${imgs.length - 5} ${ui.galeria_fotos}</p></div></div>`;
     }
     if (i === 0) {
       div.innerHTML += `<div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">photo_library</span>${imgs.length} ${ui.galeria_fotos}</div>`;
     }
-    div.onclick = () => lbOpen(i === slots - 1 && imgs.length > 5 ? 0 : i);
+    div.onclick = () => lbOpen(i === slots - 1 && imgs.length > 5 ? 4 : i);
     grid.appendChild(div);
   }
 
