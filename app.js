@@ -403,7 +403,7 @@ const renderDetails = (property) => {
   const details = [
     ["Área privada", areaPrivada],
     ["Área construida", areaConstruida],
-    ["Parqueaderos", property.parqueaderos],
+    ["Parqueadero", property.parqueaderos === 0 ? "No" : property.parqueaderos],
     ["Baños", property.banos],
     ["Habitaciones", property.habitaciones],
     ["Antigüedad", property.antiguedad],
@@ -412,7 +412,7 @@ const renderDetails = (property) => {
   ];
 
   details
-    .filter(([, value]) => value && value !== "--")
+    .filter(([, value]) => value != null && value !== "--")
     .forEach(([label, value]) => {
       const div = document.createElement("div");
       div.className = "flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700/50";
@@ -598,7 +598,7 @@ const normalizeProperty = (raw) => {
     area_construida: details?.area_construida ?? property?.area_construida,
     habitaciones: details?.num_habitaciones ?? property?.habitaciones,
     banos: details?.baños ?? details?.banos ?? property?.banos,
-    parqueaderos: details?.garajes ?? property?.parqueaderos,
+    parqueaderos: details?.parqueaderos ?? property?.parqueaderos,
     antiguedad: details?.anos_antiguedad ?? property?.antiguedad,
     telefono: details?.telefono || details?.contacto_zona || property?.telefono,
     correo: details?.correo || property?.correo,
@@ -618,15 +618,17 @@ const populatePage = (data) => {
     .filter(Boolean)
     .join(" · ");
 
-  $("#property-price").textContent = formatCurrency(property.precio);
+  $("#property-price").textContent = property.precio_anterior
+    ? formatCurrency(property.precio_anterior)
+    : formatCurrency(property.precio);
   const pricePrev = $("#property-price-prev");
   if (pricePrev) {
     pricePrev.textContent = property.precio_anterior
-      ? formatCurrency(property.precio_anterior)
+      ? formatCurrency(property.precio)
       : "";
   }
 
-  $("#property-description").textContent = property.descripcion || "Sin descripción";
+  $("#property-description").innerHTML = property.descripcion || "Sin descripción";
 
   // Handle 360 tour button (main gallery)
   const btn360Container = $("#btn-360-container");
