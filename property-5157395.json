@@ -1,141 +1,41 @@
 {
   "data": {
     "property": {
-      "property_uuid": "bbb8185d-2ee3-48a4-ba7f-8fecaba6e549",
       "images": [
-        {
-          "url": "venta-594a5fafcf-1.webp",
-          "order": 1,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-cca6e41506-2.webp",
-          "order": 2,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-130542346a-3.webp",
-          "order": 3,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-a8869bc277-4.webp",
-          "order": 4,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-ce53e7022d-5.webp",
-          "order": 5,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-a436d7d0d8-6.webp",
-          "order": 6,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-41f6746981-7.webp",
-          "order": 7,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-b1c2a02741-8.webp",
-          "order": 8,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-26226f756d-9.webp",
-          "order": 9,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-386bf4661a-13.webp",
-          "order": 10,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-facd6b7348-11.webp",
-          "order": 11,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-49daed9146-12.webp",
-          "order": 12,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-50881cb0e8-10.webp",
-          "order": 13,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-63cbf53955-14.webp",
-          "order": 14,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        },
-        {
-          "url": "venta-1a107f0224-16.webp",
-          "order": 16,
-          "type_img": 1,
-          "title": null,
-          "comment": null
-        }
+        { "url": "venta-594a5fafcf-1.webp", "order": 1 },
+        { "url": "venta-cca6e41506-2.webp", "order": 2 },
+        { "url": "venta-130542346a-3.webp", "order": 3 },
+        { "url": "venta-a8869bc277-4.webp", "order": 4 },
+        { "url": "venta-ce53e7022d-5.webp", "order": 5 },
+        { "url": "venta-a436d7d0d8-6.webp", "order": 6 },
+        { "url": "venta-41f6746981-7.webp", "order": 7 },
+        { "url": "venta-b1c2a02741-8.webp", "order": 8 },
+        { "url": "venta-26226f756d-9.webp", "order": 9 },
+        { "url": "venta-386bf4661a-13.webp", "order": 10 },
+        { "url": "venta-facd6b7348-11.webp", "order": 11 },
+        { "url": "venta-49daed9146-12.webp", "order": 12 },
+        { "url": "venta-50881cb0e8-10.webp", "order": 13 },
+        { "url": "venta-63cbf53955-14.webp", "order": 14 },
+        { "url": "venta-1a107f0224-16.webp", "order": 16 }
       ],
       "url_360": "https://apartamento-dubai.vercel.app/?m=bE7cSwnyKad",
       "servicios": [
-        {
-          "servicio": "gas",
-          "estrato": 3,
-          "valor": 25000
-        },
-        {
-          "servicio": "energia",
-          "estrato": 3,
-          "valor": 100000
-        },
-        {
-          "servicio": "acueducto",
-          "estrato": 3,
-          "valor": 115000
-        },
-        {
-          "servicio": "internet_tv",
-          "estrato": 3,
-          "valor": 125000
-        }
+        { "servicio": "gas", "valor": 25000 },
+        { "servicio": "energia", "valor": 100000 },
+        { "servicio": "acueducto", "valor": 115000 },
+        { "servicio": "internet_tv", "valor": 125000 }
       ],
-      "nid": 49695472717,
-      "property_id": "5157395",
       "titulo": "Apartamento en Venta en Las Cabañas, Bello",
-      "descripcion": "Se vende espectacular apartamento de 80 m² con vista exterior, ubicado en el 5° piso, último del edificio, con <strong>acceso por escaleras</strong>. Un espacio ideal para quienes buscan tranquilidad, excelente distribución y una inversión segura. Disfruta de: 3 habitaciones amplias y bien iluminadas. 2 baños grandes con acabados modernos. Sala-comedor, perfecta para compartir en familia. Cocina integral con alacena para mayor almacenamiento. Balcón con vista exterior, hacia una zona verde, que aporta luz natural y frescura. Patio independiente, con excelente iluminación y ventilación. Cuarto útil en la entrada del edificio para que puedas guardar cosas fácilmente.",
+      "descripcion": "Se vende espectacular apartamento de 80 m² con vista exterior, ubicado en el 5° piso, último del edificio, con <strong>acceso por escaleras</strong>. Un espacio ideal para quienes buscan tranquilidad, excelente distribución y una inversión segura. Disfruta de: 3 habitaciones amplias y bien iluminadas. 2 baños grandes con acabados modernos. Sala-comedor, perfecta para compartir en familia. Cocina integral con alacena para mayor almacenamiento. Balcón con vista exterior, hacia una zona verde, que aporta luz natural. Patio independiente, con excelente iluminación y ventilación. Cuarto útil en la entrada del edificio para que puedas guardar cosas fácilmente. Parqueaderos cercanos.",
+      "destacados": [
+        { "icono": "stairs", "titulo": "Acceso por escaleras", "detalle": "5° piso, último del edificio" },
+        { "icono": "bathtub", "titulo": "2 baños grandes", "detalle": "Con acabados modernos" },
+        { "icono": "living", "titulo": "Sala-comedor", "detalle": "Perfecta para compartir en familia" },
+        { "icono": "local_parking", "titulo": "Parqueaderos cercanos", "detalle": "Sin parqueadero propio, opciones disponibles en la zona" },
+        { "icono": "balcony", "titulo": "Balcón con vista exterior", "detalle": "Luz natural" },
+        { "icono": "kitchen", "titulo": "Cocina integral con alacena", "detalle": "Mayor almacenamiento" },
+        { "icono": "yard", "titulo": "Patio independiente", "detalle": "Con excelente iluminación y ventilación" }
+      ],
       "detalles_propiedad": {
         "area": 80.0,
         "tipo_inmueble": "Apartamento",
@@ -144,69 +44,62 @@
         "direccion": "CARRERA 58AA 31-166",
         "precio_venta": 328000000.0,
         "precio_anterior": 340000000.0,
-        "discount_rate": null,
         "barriocomun": "Las Cabañas",
-        "meta_title": "",
         "correo": "tati7214@gmail.com",
-        "conjunto_edificio": "Dubai",
-        "inventory_type_id": 2,
-        "property_moment_id": 2,
-        "publicado": 2,
         "ciudad": "Bello",
-        "remodelation": 0,
         "num_habitaciones": 3,
         "num_ascensores": 0,
         "num_piso": 5,
-        "flat": 5,
         "baños": 2,
         "parqueaderos": 0,
         "telefono": "3015637932",
-        "anos_antiguedad": 10,
-        "last_admin_price": 0,
-        "is_private": 1,
-        "zona_metropolitana": "Valle de Aburrá",
         "contacto_zona": "+57 3025673648",
-        "zona_mediana": "LA CABAÑA",
-        "date_publication": "2025-12-30 12:08:20",
-        "date_publication_full": "2025-12-30 12:08:20",
         "latitud": 6.319948999999999,
         "longitud": -75.565495
-      },
-      "caracteristicas_propiedad": [
-        "Interior",
-        "Balcón",
-        "Conjunto Cerrado",
-        "Instalación de gas"
-      ]
-    },
-    "icon_details": {
-      "building_details": {
-        "name_set": "Dubai",
-        "admin_price": 0,
-        "stratum": "3",
-        "property_age": 10,
-        "remodeled": 0
-      },
-      "distribution_details": {
-        "area": 80.0,
-        "number_rooms": 3,
-        "toilets": 2,
-        "garages": 0,
-        "elevator_number": 0
-      },
-      "other_details": {
-        "tipo_inmueble": "Apartamento",
-        "deposit": 0,
-        "reception": 1,
-        "laundry_area": 0,
-        "gas": 1,
-        "visitor_parking": 0
       }
     },
-    "sitios_interes": {
-      "centro_comercial": [],
-      "supermercados": [],
-      "parques": []
+    "ui": {
+      "precio_label": "Precio de Venta",
+      "hero_badge": "Ficha Inmobiliaria",
+      "descuento_label": "Bajó de precio",
+      "tour_titulo": "Tour Virtual 360°",
+      "tour_subtitulo": "Explora cada rincón sin salir de casa",
+      "tour_boton": "Iniciar Tour",
+      "contacto_titulo": "Solicitar Información",
+      "contacto_llamar": "Llamar",
+      "contacto_correo": "Enviar Correo",
+      "contacto_whatsapp": "WhatsApp",
+      "galeria_ver_todas": "Ver las {n} fotos",
+      "galeria_desliza": "Desliza para ver más",
+      "galeria_fotos": "fotos",
+      "lightbox_hint": "← Desliza o usa las flechas →",
+      "seccion_descripcion": "Descripción",
+      "seccion_destacados": "Destacados",
+      "seccion_ficha": "Ficha Técnica",
+      "seccion_gastos": "Gastos estimados",
+      "seccion_ubicacion": "Ubicación",
+      "mapa_boton": "Ver mapa completo",
+      "sin_destacados": "No hay destacados.",
+      "sin_servicios": "Sin datos de servicios.",
+      "sin_imagenes": "Sin imágenes",
+      "ubicacion_no_disponible": "Ubicación no disponible",
+      "error_carga": "No se pudo cargar el inmueble",
+      "footer": "© {year} — Todos los derechos reservados.",
+      "ficha_labels": {
+        "area": "Área",
+        "habitaciones": "Habitaciones",
+        "banos": "Baños",
+        "estrato": "Estrato",
+        "piso": "Piso",
+        "parqueadero": "Parqueadero"
+      },
+      "parqueadero_no": "No",
+      "servicios_nombres": {
+        "gas": "Gas",
+        "energia": "Energía",
+        "acueducto": "Acueducto",
+        "internet_tv": "Internet + TV"
+      }
     }
   },
   "success": true

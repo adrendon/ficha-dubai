@@ -1,691 +1,375 @@
-const $ = (selector) => document.querySelector(selector);
+const $ = (s) => document.querySelector(s);
 
-// Lightbox state
-let lightboxImages = [];
-let lightboxCurrentIndex = 0;
-let lightboxThumbPage = 0;
-const LIGHTBOX_THUMBS_PER_PAGE = 8;
-
-// Gallery state
-let galleryImages = [];
-let galleryCurrentIndex = 0;
-let galleryThumbPage = 0;
-let galleryThumbsPerPage = 8; // Will be adjusted for mobile
-
-const formatCurrency = (value) => {
-  if (!value && value !== 0) return "--";
-  return new Intl.NumberFormat("es-CO", {
-    style: "currency",
-    currency: "COP",
-    maximumFractionDigits: 0,
-  }).format(value);
+// ── Helpers ──
+const fmtCurrency = (v) => !v && v !== 0 ? "--" : new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v);
+const fmtNumber = (v) => !v && v !== 0 ? "--" : new Intl.NumberFormat("es-CO").format(v);
+const fmtShort = (v) => {
+  if (!v && v !== 0) return "--";
+  return `$ ${fmtNumber(v)}`;
 };
 
-const formatNumber = (value) => {
-  if (!value && value !== 0) return "--";
-  return new Intl.NumberFormat("es-CO").format(value);
-};
+// ── Lightbox ──
+let lbImages = [], lbIdx = 0;
 
-// ============ PAGINATION HELPERS ============
-
-const getThumbsPerPage = () => {
-  return window.innerWidth < 768 ? 4 : 8;
-};
-
-const getTotalPages = (totalItems, perPage) => {
-  return Math.ceil(totalItems / perPage);
-};
-
-const renderPaginationDots = (container, currentPage, totalPages, onPageClick, isLight = false) => {
-  container.innerHTML = "";
-  if (totalPages <= 1) return;
-  
-  for (let i = 0; i < totalPages; i++) {
-    const dot = document.createElement("button");
-    const activeClass = isLight 
-      ? (i === currentPage ? "bg-white" : "bg-white/40 hover:bg-white/60")
-      : (i === currentPage ? "bg-primary" : "bg-slate-300 dark:bg-slate-600 hover:bg-slate-400");
-    dot.className = `w-2.5 h-2.5 rounded-full transition-colors ${activeClass}`;
-    dot.addEventListener("click", () => onPageClick(i));
-    container.appendChild(dot);
-  }
-};
-
-// ============ LIGHTBOX FUNCTIONS ============
-
-const openLightbox = (index) => {
-  const lightbox = $("#lightbox");
-  lightboxCurrentIndex = index;
-  // Calculate which page this image is on
-  lightboxThumbPage = Math.floor(index / LIGHTBOX_THUMBS_PER_PAGE);
-  updateLightboxImage();
-  renderLightboxThumbnails();
-  lightbox.classList.remove("hidden");
-  lightbox.classList.add("flex");
+function lbOpen(i) {
+  lbIdx = i; lbUpdate(); lbRenderThumbs();
+  $("#lightbox").classList.remove("hidden"); $("#lightbox").classList.add("flex");
   document.body.style.overflow = "hidden";
-};
-
-const closeLightbox = () => {
-  const lightbox = $("#lightbox");
-  lightbox.classList.add("hidden");
-  lightbox.classList.remove("flex");
+}
+function lbClose() {
+  $("#lightbox").classList.add("hidden"); $("#lightbox").classList.remove("flex");
   document.body.style.overflow = "";
-};
-
-const updateLightboxImage = () => {
-  const lightboxImage = $("#lightbox-image");
-  const lightboxCounter = $("#lightbox-counter");
-  
-  if (lightboxImages.length > 0) {
-    lightboxImage.src = lightboxImages[lightboxCurrentIndex];
-    lightboxImage.alt = `Imagen ${lightboxCurrentIndex + 1}`;
-    lightboxCounter.textContent = `${lightboxCurrentIndex + 1} / ${lightboxImages.length}`;
-  }
-  
-  // Update thumbnail highlights
-  updateLightboxThumbHighlights();
-};
-
-const updateLightboxThumbHighlights = () => {
-  const thumbs = document.querySelectorAll("#lightbox-thumbnails .lightbox-thumb");
-  const startIndex = lightboxThumbPage * LIGHTBOX_THUMBS_PER_PAGE;
-  
-  thumbs.forEach((thumb, i) => {
-    const actualIndex = startIndex + i;
-    const isActive = actualIndex === lightboxCurrentIndex;
-    thumb.classList.toggle("ring-2", isActive);
-    thumb.classList.toggle("ring-white", isActive);
-    thumb.classList.toggle("opacity-50", !isActive);
+}
+function lbUpdate() {
+  if (!lbImages.length) return;
+  $("#lb-img").src = lbImages[lbIdx];
+  $("#lb-counter").textContent = `${lbIdx + 1} / ${lbImages.length}`;
+  const thumbs = document.querySelectorAll("#lb-thumbs > div");
+  thumbs.forEach((t, idx) => {
+    t.classList.toggle("ring-2", idx === lbIdx);
+    t.classList.toggle("ring-white", idx === lbIdx);
+    t.classList.toggle("opacity-40", idx !== lbIdx);
+    t.classList.toggle("opacity-100", idx === lbIdx);
   });
-};
-
-const renderLightboxThumbnails = () => {
-  const container = $("#lightbox-thumbnails");
-  const paginationContainer = $("#lightbox-pagination");
-  const prevBtn = $("#lightbox-thumb-prev");
-  const nextBtn = $("#lightbox-thumb-next");
-  
-  container.innerHTML = "";
-  
-  const totalPages = getTotalPages(lightboxImages.length, LIGHTBOX_THUMBS_PER_PAGE);
-  const startIndex = lightboxThumbPage * LIGHTBOX_THUMBS_PER_PAGE;
-  const endIndex = Math.min(startIndex + LIGHTBOX_THUMBS_PER_PAGE, lightboxImages.length);
-  
-  for (let i = startIndex; i < endIndex; i++) {
-    const src = lightboxImages[i];
-    const thumb = document.createElement("div");
-    const isActive = i === lightboxCurrentIndex;
-    thumb.className = `lightbox-thumb w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden cursor-pointer transition-all flex-shrink-0 ${isActive ? "ring-2 ring-white" : "opacity-50 hover:opacity-80"}`;
-    const img = document.createElement("img");
-    img.src = src;
-    img.alt = `Miniatura ${i + 1}`;
-    img.className = "w-full h-full object-cover";
-    thumb.appendChild(img);
-    thumb.addEventListener("click", () => {
-      lightboxCurrentIndex = i;
-      updateLightboxImage();
-    });
-    container.appendChild(thumb);
-  }
-  
-  // Update navigation buttons
-  if (prevBtn) prevBtn.disabled = lightboxThumbPage === 0;
-  if (nextBtn) nextBtn.disabled = lightboxThumbPage >= totalPages - 1;
-  
-  // Render pagination dots
-  if (paginationContainer) {
-    renderPaginationDots(paginationContainer, lightboxThumbPage, totalPages, (page) => {
-      lightboxThumbPage = page;
-      renderLightboxThumbnails();
-    }, true);
-  }
-};
-
-const lightboxNext = () => {
-  lightboxCurrentIndex = (lightboxCurrentIndex + 1) % lightboxImages.length;
-  // Auto-advance page if needed
-  const newPage = Math.floor(lightboxCurrentIndex / LIGHTBOX_THUMBS_PER_PAGE);
-  if (newPage !== lightboxThumbPage) {
-    lightboxThumbPage = newPage;
-    renderLightboxThumbnails();
-  } else {
-    updateLightboxImage();
-  }
-};
-
-const lightboxPrev = () => {
-  lightboxCurrentIndex = (lightboxCurrentIndex - 1 + lightboxImages.length) % lightboxImages.length;
-  // Auto-advance page if needed
-  const newPage = Math.floor(lightboxCurrentIndex / LIGHTBOX_THUMBS_PER_PAGE);
-  if (newPage !== lightboxThumbPage) {
-    lightboxThumbPage = newPage;
-    renderLightboxThumbnails();
-  } else {
-    updateLightboxImage();
-  }
-};
-
-const lightboxThumbNextPage = () => {
-  const totalPages = getTotalPages(lightboxImages.length, LIGHTBOX_THUMBS_PER_PAGE);
-  if (lightboxThumbPage < totalPages - 1) {
-    lightboxThumbPage++;
-    renderLightboxThumbnails();
-  }
-};
-
-const lightboxThumbPrevPage = () => {
-  if (lightboxThumbPage > 0) {
-    lightboxThumbPage--;
-    renderLightboxThumbnails();
-  }
-};
-
-const initLightbox = () => {
-  const lightbox = $("#lightbox");
-  const closeBtn = $("#lightbox-close");
-  const prevBtn = $("#lightbox-prev");
-  const nextBtn = $("#lightbox-next");
-  const thumbPrevBtn = $("#lightbox-thumb-prev");
-  const thumbNextBtn = $("#lightbox-thumb-next");
-  
-  if (!lightbox) return;
-  
-  closeBtn?.addEventListener("click", closeLightbox);
-  prevBtn?.addEventListener("click", lightboxPrev);
-  nextBtn?.addEventListener("click", lightboxNext);
-  thumbPrevBtn?.addEventListener("click", lightboxThumbPrevPage);
-  thumbNextBtn?.addEventListener("click", lightboxThumbNextPage);
-  
-  // Close on backdrop click
-  lightbox.addEventListener("click", (e) => {
-    if (e.target === lightbox) closeLightbox();
+  const active = document.querySelector(`#lb-thumbs > div:nth-child(${lbIdx + 1})`);
+  if (active) active.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+}
+function lbNav(dir) { lbIdx = (lbIdx + dir + lbImages.length) % lbImages.length; lbUpdate(); }
+function lbRenderThumbs() {
+  const c = $("#lb-thumbs"); c.innerHTML = "";
+  lbImages.forEach((src, i) => {
+    const div = document.createElement("div");
+    div.className = `flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden cursor-pointer transition-all ${i === lbIdx ? "ring-2 ring-white opacity-100" : "opacity-40 hover:opacity-70"}`;
+    div.innerHTML = `<img src="${src}" alt="" class="w-full h-full object-cover"/>`;
+    div.onclick = () => { lbIdx = i; lbUpdate(); };
+    c.appendChild(div);
   });
-  
-  // Keyboard navigation
+}
+function initLightbox() {
+  $("#lb-close").onclick = lbClose;
+  $("#lb-prev").onclick = () => lbNav(-1);
+  $("#lb-next").onclick = () => lbNav(1);
+  $("#lightbox").onclick = (e) => { if (e.target === $("#lightbox")) lbClose(); };
   document.addEventListener("keydown", (e) => {
-    if (lightbox.classList.contains("hidden")) return;
-    
-    if (e.key === "Escape") closeLightbox();
-    if (e.key === "ArrowRight") lightboxNext();
-    if (e.key === "ArrowLeft") lightboxPrev();
+    if ($("#lightbox").classList.contains("hidden")) return;
+    if (e.key === "Escape") lbClose();
+    if (e.key === "ArrowRight") lbNav(1);
+    if (e.key === "ArrowLeft") lbNav(-1);
   });
-};
+  let touchStartX = 0;
+  const img = $("#lb-img");
+  img.addEventListener("touchstart", (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+  img.addEventListener("touchend", (e) => {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 50) { diff < 0 ? lbNav(1) : lbNav(-1); }
+  }, { passive: true });
+}
 
-// ============ BADGE FUNCTIONS ============
+// ── Gallery ──
+function renderGallery(images, ui) {
+  const grid = $("#gallery-grid");
+  const thumbs = $("#gallery-thumbs");
+  const mobileTrack = $("#gallery-mobile-track");
+  const mobileCounter = $("#gallery-mobile-counter");
+  const seeAllBtn = $("#gallery-see-all");
+  const seeAllText = $("#gallery-see-all-text");
+  const hero = $("#hero-image");
 
-const buildBadge = (text) => {
-  const badge = document.createElement("span");
-  badge.className = "px-4 py-1.5 rounded-full bg-white/10 text-white text-sm font-medium backdrop-blur-md";
-  badge.textContent = text;
-  return badge;
-};
+  const imgs = images.length ? images.map((f) => f.startsWith("http") ? f : `images/${f}`) : [];
+  lbImages = imgs;
 
-const renderBadges = (property) => {
-  const container = $("#property-badges");
-  container.innerHTML = "";
+  if (hero && imgs.length) hero.src = imgs[0];
+  if (!imgs.length) { grid.innerHTML = `<div class="g-main bg-border-light flex items-center justify-center text-on-surface-muted rounded-2xl">${ui.sin_imagenes}</div>`; return; }
 
-  const badges = [];
-  if (property.tipo_inmueble) badges.push(property.tipo_inmueble);
-  if (property.area_privada) badges.push(`${formatNumber(property.area_privada)} m²`);
-  if (property.estrato) badges.push(`Estrato ${property.estrato}`);
-  if (property.estado) badges.push(property.estado);
-  if (property.ciudad) badges.push(property.ciudad);
-
-  badges.forEach((text) => container.appendChild(buildBadge(text)));
-};
-
-const renderGallery = (images) => {
-  const mainImage = $("#gallery-main-image");
-  const thumbContainer = $("#gallery-thumbnails");
-  const photoCount = $("#photo-count");
-  const paginationContainer = $("#thumb-pagination");
-  const prevBtn = $("#thumb-prev");
-  const nextBtn = $("#thumb-next");
-  const mainPrevBtn = $("#gallery-main-prev");
-  const mainNextBtn = $("#gallery-main-next");
-
-  const resolvedImages = images.length
-    ? images.map((img) => (img.startsWith("http") ? img : `images/${img}`))
-    : ["https://via.placeholder.com/1200x750?text=Sin+imagen"];
-
-  // Store images for lightbox and gallery
-  lightboxImages = resolvedImages;
-  galleryImages = resolvedImages;
-  galleryThumbsPerPage = getThumbsPerPage();
-
-  // Update photo count
-  if (photoCount) {
-    photoCount.textContent = resolvedImages.length;
+  // Desktop Grid
+  grid.innerHTML = "";
+  const slots = Math.min(5, imgs.length);
+  for (let i = 0; i < slots; i++) {
+    const div = document.createElement("div");
+    div.className = i === 0 ? "g-main relative cursor-pointer overflow-hidden" : "g-secondary relative cursor-pointer overflow-hidden";
+    div.innerHTML = `<img src="${imgs[i]}" alt=""/>`;
+    if (i === slots - 1 && imgs.length > 5) {
+      div.innerHTML += `<div class="absolute inset-0 bg-black/50 flex items-center justify-center hover:bg-black/60 transition-colors"><div class="text-center text-white"><span class="material-symbols-outlined text-3xl">grid_view</span><p class="font-bold mt-1">+${imgs.length - 4} ${ui.galeria_fotos}</p></div></div>`;
+    }
+    if (i === 0) {
+      div.innerHTML += `<div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">photo_library</span>${imgs.length} ${ui.galeria_fotos}</div>`;
+    }
+    div.onclick = () => lbOpen(i === slots - 1 && imgs.length > 5 ? 0 : i);
+    grid.appendChild(div);
   }
 
-  const setActive = (index) => {
-    galleryCurrentIndex = index;
-    mainImage.src = resolvedImages[index];
-    mainImage.alt = `Imagen ${index + 1}`;
-    updateGalleryThumbHighlights();
-    
-    // Show 360 button only on first image
-    const btn360Container = $("#btn-360-container");
-    if (btn360Container && btn360Container.dataset.has360 === "true") {
-      btn360Container.style.display = index === 0 ? "flex" : "none";
-    }
-  };
-
-  const updateGalleryThumbHighlights = () => {
-    const thumbs = thumbContainer.querySelectorAll(".thumbnail-item");
-    const startIndex = galleryThumbPage * galleryThumbsPerPage;
-    
-    thumbs.forEach((thumb, i) => {
-      const actualIndex = startIndex + i;
-      const isActive = actualIndex === galleryCurrentIndex;
-      thumb.classList.toggle("ring-2", isActive);
-      thumb.classList.toggle("ring-primary", isActive);
-      thumb.classList.toggle("opacity-80", !isActive);
-      thumb.classList.toggle("opacity-100", isActive);
+  // Mobile
+  mobileTrack.innerHTML = "";
+  imgs.forEach((src, i) => {
+    const div = document.createElement("div");
+    div.innerHTML = `<img src="${src}" alt=""/>`;
+    div.onclick = () => lbOpen(i);
+    mobileTrack.appendChild(div);
+  });
+  if (mobileCounter) {
+    mobileCounter.textContent = `1 / ${imgs.length}`;
+    mobileTrack.addEventListener("scroll", () => {
+      const idx = Math.round(mobileTrack.scrollLeft / mobileTrack.offsetWidth) + 1;
+      mobileCounter.textContent = `${idx} / ${imgs.length}`;
     });
-  };
-
-  const renderThumbnails = () => {
-    thumbContainer.innerHTML = "";
-    galleryThumbsPerPage = getThumbsPerPage();
-    
-    const totalPages = getTotalPages(resolvedImages.length, galleryThumbsPerPage);
-    const startIndex = galleryThumbPage * galleryThumbsPerPage;
-    const endIndex = Math.min(startIndex + galleryThumbsPerPage, resolvedImages.length);
-    
-    for (let i = startIndex; i < endIndex; i++) {
-      const src = resolvedImages[i];
-      const thumb = document.createElement("div");
-      const isActive = i === galleryCurrentIndex;
-      thumb.className = `thumbnail-item aspect-square rounded-md overflow-hidden bg-slate-100 dark:bg-slate-700 cursor-pointer transition ${isActive ? "ring-2 ring-primary opacity-100" : "opacity-80 hover:opacity-100"}`;
-      const img = document.createElement("img");
-      img.src = src;
-      img.alt = `Miniatura ${i + 1}`;
-      img.className = "w-full h-full object-cover";
-      thumb.appendChild(img);
-      thumb.addEventListener("click", () => setActive(i));
-      thumb.addEventListener("dblclick", () => openLightbox(i));
-      thumbContainer.appendChild(thumb);
-    }
-    
-    // Update navigation buttons
-    if (prevBtn) prevBtn.disabled = galleryThumbPage === 0;
-    if (nextBtn) nextBtn.disabled = galleryThumbPage >= totalPages - 1;
-    
-    // Render pagination dots
-    if (paginationContainer) {
-      renderPaginationDots(paginationContainer, galleryThumbPage, totalPages, (page) => {
-        galleryThumbPage = page;
-        renderThumbnails();
-      }, false);
-    }
-  };
-
-  const galleryNextImage = () => {
-    const newIndex = (galleryCurrentIndex + 1) % resolvedImages.length;
-    setActive(newIndex);
-    // Auto-advance page if needed
-    const newPage = Math.floor(newIndex / galleryThumbsPerPage);
-    if (newPage !== galleryThumbPage) {
-      galleryThumbPage = newPage;
-      renderThumbnails();
-    }
-  };
-
-  const galleryPrevImage = () => {
-    const newIndex = (galleryCurrentIndex - 1 + resolvedImages.length) % resolvedImages.length;
-    setActive(newIndex);
-    // Auto-advance page if needed
-    const newPage = Math.floor(newIndex / galleryThumbsPerPage);
-    if (newPage !== galleryThumbPage) {
-      galleryThumbPage = newPage;
-      renderThumbnails();
-    }
-  };
-
-  const thumbNextPage = () => {
-    const totalPages = getTotalPages(resolvedImages.length, galleryThumbsPerPage);
-    if (galleryThumbPage < totalPages - 1) {
-      galleryThumbPage++;
-      renderThumbnails();
-    }
-  };
-
-  const thumbPrevPage = () => {
-    if (galleryThumbPage > 0) {
-      galleryThumbPage--;
-      renderThumbnails();
-    }
-  };
-
-  // Event listeners for navigation
-  if (prevBtn) {
-    prevBtn.onclick = thumbPrevPage;
-  }
-  if (nextBtn) {
-    nextBtn.onclick = thumbNextPage;
-  }
-  if (mainPrevBtn) {
-    mainPrevBtn.onclick = galleryPrevImage;
-  }
-  if (mainNextBtn) {
-    mainNextBtn.onclick = galleryNextImage;
   }
 
-  // Make main image clickable to open lightbox
-  mainImage.classList.add("cursor-pointer");
-  mainImage.onclick = () => openLightbox(galleryCurrentIndex);
+  // Desliza label
+  const deslizaEl = $("#gallery-desliza-label");
+  if (deslizaEl) deslizaEl.textContent = `· ${ui.galeria_desliza}`;
 
-  // Handle window resize
-  window.addEventListener("resize", () => {
-    const newPerPage = getThumbsPerPage();
-    if (newPerPage !== galleryThumbsPerPage) {
-      galleryThumbsPerPage = newPerPage;
-      galleryThumbPage = Math.floor(galleryCurrentIndex / galleryThumbsPerPage);
-      renderThumbnails();
+  // Thumbs (remaining images, fill width)
+  thumbs.innerHTML = "";
+  const thumbStart = Math.min(5, imgs.length);
+  const remaining = imgs.length - thumbStart;
+  if (remaining > 0) {
+    thumbs.style.display = "grid";
+    thumbs.style.gridTemplateColumns = `repeat(${remaining}, 1fr)`;
+    thumbs.style.gap = "6px";
+    for (let i = thumbStart; i < imgs.length; i++) {
+      const t = document.createElement("div");
+      t.className = "aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-brand/40 transition-all";
+      t.innerHTML = `<img src="${imgs[i]}" alt="" class="w-full h-full object-cover"/>`;
+      t.onclick = () => lbOpen(i);
+      thumbs.appendChild(t);
     }
+  }
+
+  // See all
+  if (seeAllText) seeAllText.textContent = ui.galeria_ver_todas.replace("{n}", imgs.length);
+  if (seeAllBtn) seeAllBtn.onclick = () => lbOpen(0);
+}
+
+// ── Hero badges ──
+function renderHeroBadges(p, ui) {
+  const c = $("#hero-badges"); c.innerHTML = "";
+  const labels = ui.ficha_labels || {};
+  const items = [];
+  if (p.area_privada) items.push({ icon: "square_foot", text: `${fmtNumber(p.area_privada)} m²` });
+  if (p.habitaciones) items.push({ icon: "king_bed", text: `${p.habitaciones} ${labels.habitaciones || ""}` });
+  if (p.banos) items.push({ icon: "bathtub", text: `${p.banos} ${labels.banos || ""}` });
+  if (p.piso) items.push({ icon: "stairs", text: `${labels.piso || ""} ${p.piso}` });
+  if (p.parqueaderos === 0) items.push({ icon: "no_crash", text: `${labels.parqueadero || ""}: ${ui.parqueadero_no}` });
+
+  items.forEach(({ icon, text }) => {
+    const div = document.createElement("div");
+    div.className = "flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10";
+    div.innerHTML = `<span class="material-symbols-outlined text-white text-[18px]">${icon}</span><span class="text-white font-semibold text-sm">${text}</span>`;
+    c.appendChild(div);
   });
+}
 
-  // Initial render
-  renderThumbnails();
-  setActive(0);
-};
+// ── Section titles ──
+function renderSectionTitles(ui) {
+  const set = (id, icon, text) => { const el = $(id); if (el) el.innerHTML = `<span class="material-symbols-outlined text-brand text-[22px]">${icon}</span>${text}`; };
+  set("#sec-descripcion-title", "notes", ui.seccion_descripcion);
+  set("#sec-destacados-title", "star", ui.seccion_destacados);
+  set("#sec-ficha-title", "info", ui.seccion_ficha);
+  set("#sec-gastos-title", "payments", ui.seccion_gastos);
+  set("#sec-ubicacion-title-desktop", "location_on", ui.seccion_ubicacion);
+  set("#sec-ubicacion-title-mobile", "location_on", ui.seccion_ubicacion);
+  const setBtn = (id, text) => { const el = $(id); if (el) el.textContent = text; };
+  setBtn("#map-btn-text-desktop", ui.mapa_boton);
+  setBtn("#map-btn-text-mobile", ui.mapa_boton);
+}
 
-const renderDetails = (property) => {
-  const detailsList = $("#property-details");
-  detailsList.innerHTML = "";
+// ── Destacados ──
+function renderHighlights(destacados, ui) {
+  const c = $("#property-highlights"); c.innerHTML = "";
+  if (!destacados || !destacados.length) { c.innerHTML = `<p class="text-on-surface-secondary text-sm">${ui.sin_destacados}</p>`; return; }
+  destacados.forEach((d) => {
+    const div = document.createElement("div");
+    div.className = "flex gap-3 items-start p-3 rounded-xl bg-brand-surface border border-brand/10";
+    div.innerHTML = `<span class="material-symbols-outlined text-brand shrink-0 text-[20px]">${d.icono}</span><div><p class="font-semibold text-on-surface text-sm">${d.titulo}</p><p class="text-on-surface-secondary text-xs mt-0.5">${d.detalle}</p></div>`;
+    c.appendChild(div);
+  });
+}
 
-  const areaPrivada = property.area_privada ? `${formatNumber(property.area_privada)} m²` : null;
-  const areaConstruida = property.area_construida
-    ? `${formatNumber(property.area_construida)} m²`
-    : null;
-
-  const details = [
-    ["Área privada", areaPrivada],
-    ["Área construida", areaConstruida],
-    ["Parqueadero", property.parqueaderos === 0 ? "No" : property.parqueaderos],
-    ["Baños", property.banos],
-    ["Habitaciones", property.habitaciones],
-    ["Antigüedad", property.antiguedad],
-    ["Tipo", property.tipo_inmueble],
-    ["Estrato", property.estrato],
+// ── Ficha Técnica ──
+function renderFicha(p, ui) {
+  const c = $("#property-ficha"); c.innerHTML = "";
+  const labels = ui.ficha_labels || {};
+  const rows = [
+    [labels.area, p.area_privada ? `${fmtNumber(p.area_privada)} m²` : null],
+    [labels.habitaciones, p.habitaciones],
+    [labels.banos, p.banos],
+    [labels.estrato, p.estrato],
+    [labels.piso, p.piso],
+    [labels.parqueadero, p.parqueaderos === 0 ? ui.parqueadero_no : p.parqueaderos],
   ];
-
-  details
-    .filter(([, value]) => value != null && value !== "--")
-    .forEach(([label, value]) => {
-      const div = document.createElement("div");
-      div.className = "flex justify-between items-center py-2 border-b border-slate-100 dark:border-slate-700/50";
-      const span = document.createElement("span");
-      span.className = "text-slate-500 text-sm";
-      span.textContent = label;
-      const strong = document.createElement("span");
-      strong.className = "font-bold";
-      strong.textContent = value;
-      div.appendChild(span);
-      div.appendChild(strong);
-      detailsList.appendChild(div);
-    });
-};
-
-const renderDistribution = (property) => {
-  const list = $("#property-distribution");
-  list.innerHTML = "";
-
-  const items = [
-    ["Habitaciones", property.habitaciones],
-    ["Baños", property.banos],
-    ["Parqueaderos", property.parqueaderos],
-    ["Estrato", property.estrato],
-  ];
-
-  items
-    .filter(([, value]) => value && value !== "--")
-    .forEach(([label, value]) => {
-      const li = document.createElement("li");
-      const span = document.createElement("span");
-      span.textContent = label;
-      const strong = document.createElement("strong");
-      strong.textContent = value;
-      li.appendChild(span);
-      li.appendChild(strong);
-      list.appendChild(li);
-    });
-};
-
-const renderFeatures = (features) => {
-  const container = $("#property-features");
-  container.innerHTML = "";
-
-  if (!features || !features.length) {
-    container.innerHTML = "<span class=\"text-slate-500 text-sm\">No hay características disponibles.</span>";
-    return;
-  }
-
-  features.forEach((feature) => {
-    const span = document.createElement("span");
-    span.className = "bg-slate-50 dark:bg-slate-700/50 px-4 py-2 rounded-lg text-sm text-slate-700 dark:text-slate-300 border border-slate-100 dark:border-slate-600";
-    span.textContent = feature;
-    container.appendChild(span);
+  rows.filter(([k, v]) => k && v != null).forEach(([label, value]) => {
+    const row = document.createElement("div");
+    row.className = "flex justify-between py-2.5 border-b border-border-light last:border-b-0";
+    row.innerHTML = `<span class="text-on-surface-secondary text-sm">${label}</span><span class="text-on-surface font-bold text-sm">${value}</span>`;
+    c.appendChild(row);
   });
-};
+}
 
-const renderServices = (services) => {
-  const container = $("#property-services");
-  container.innerHTML = "";
-
-  if (!services || !services.length) {
-    container.innerHTML = "<p class=\"text-slate-500 text-sm\">No hay servicios registrados.</p>";
-    return;
-  }
-
-  services.forEach((service) => {
-    const item = document.createElement("div");
-    item.className = "flex justify-between items-center p-3 rounded-xl bg-slate-50 dark:bg-slate-700/30";
-    const label = document.createElement("span");
-    label.className = "text-sm font-medium";
-    label.textContent = service.nombre || service.servicio || "Servicio";
-    const value = document.createElement("span");
-    value.className = "text-sm font-bold";
-    value.textContent = service.valor ? formatCurrency(service.valor) : "--";
-    item.appendChild(label);
-    item.appendChild(value);
-    container.appendChild(item);
+// ── Gastos ──
+function renderGastos(servicios, ui) {
+  const c = $("#property-gastos"); c.innerHTML = "";
+  if (!servicios || !servicios.length) { c.innerHTML = `<p class="text-on-surface-secondary text-sm">${ui.sin_servicios}</p>`; return; }
+  const names = ui.servicios_nombres || {};
+  servicios.forEach((s) => {
+    const div = document.createElement("div");
+    div.className = "flex justify-between items-center bg-surface px-4 py-2.5 rounded-xl mb-2 last:mb-0";
+    div.innerHTML = `<span class="text-on-surface-secondary text-sm">${names[s.servicio] || s.servicio}</span><span class="text-on-surface font-bold text-sm">${fmtShort(s.valor)}</span>`;
+    c.appendChild(div);
   });
-};
+}
 
-const renderContact = (property) => {
-  const phone = property.telefono || "";
-  const email = property.correo || "";
+// ── Price ──
+function renderPrice(p, ui) {
+  const priceHtml = `<p class="text-on-surface text-[26px] font-display font-bold">${fmtCurrency(p.precio)}</p>${p.precio_anterior && p.precio_anterior > p.precio ? `<p class="text-on-surface-muted text-sm line-through mt-1">${fmtCurrency(p.precio_anterior)}</p><div class="mt-2 inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-semibold"><span class="material-symbols-outlined text-[16px]">trending_down</span>${ui.descuento_label}</div>` : ""}`;
+  const sidebar = $("#sidebar-price-card");
+  if (sidebar) sidebar.innerHTML = `<p class="text-on-surface-muted text-xs uppercase tracking-widest mb-1">${ui.precio_label}</p>${priceHtml}`;
+  const mobile = $("#price-mobile");
+  if (mobile) mobile.innerHTML = priceHtml;
+}
 
-  const phoneLink = $("#contact-phone");
-  const phoneText = $("#contact-phone-text");
-  if (phoneText) {
-    phoneText.textContent = phone ? `Llamar ${phone}` : "Llamar";
-  }
-  if (phoneLink) {
-    phoneLink.href = phone ? `tel:${phone}` : "#";
-  }
+// ── Tour (desktop sidebar) ──
+function renderSidebarTour(url360, ui) {
+  const c = $("#sidebar-tour");
+  if (!url360 || !c) return;
+  c.classList.add("lg:block");
+  c.innerHTML = `<div class="w-12 h-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3"><span class="material-symbols-outlined text-brand text-[24px]">360</span></div><p class="font-display font-bold text-on-surface text-sm mb-0.5">${ui.tour_titulo}</p><p class="text-on-surface-secondary text-xs mb-4">${ui.tour_subtitulo}</p><a href="${url360}" target="_blank" rel="noopener" class="block w-full bg-brand text-white py-3 rounded-xl font-semibold text-sm hover:bg-brand-light transition-colors">${ui.tour_boton}</a>`;
+}
 
-  const emailLink = $("#contact-email");
-  if (emailLink) {
-    emailLink.href = email ? `mailto:${email}` : "#";
-  }
+// ── Tour mobile ──
+function renderTourMobile(url360, ui) {
+  const c = $("#tour-mobile");
+  if (!url360 || !c) { if (c) c.style.display = "none"; return; }
+  c.innerHTML = `<div class="flex items-center justify-center gap-3 mb-3"><div class="w-10 h-10 bg-brand/10 rounded-full flex items-center justify-center"><span class="material-symbols-outlined text-brand text-[22px]">360</span></div><div class="text-left"><p class="font-display font-bold text-on-surface text-sm">${ui.tour_titulo}</p><p class="text-on-surface-secondary text-xs">${ui.tour_subtitulo}</p></div></div><a href="${url360}" target="_blank" rel="noopener" class="block w-full bg-brand text-white py-3 rounded-xl font-semibold text-sm hover:bg-brand-light transition-colors">${ui.tour_boton}</a>`;
+}
 
-  const whatsappLink = $("#contact-whatsapp");
-  if (phone) {
-    const cleaned = phone.replace(/\D/g, "");
-    if (whatsappLink) whatsappLink.href = `https://wa.me/57${cleaned}`;
-  } else {
-    if (whatsappLink) whatsappLink.href = "#";
-  }
+// ── Contact ──
+function renderContact(p, ui) {
+  const c = $("#sidebar-contact"); if (!c) return;
+  const phone = p.telefono || "";
+  const email = p.correo || "";
+  const waHref = phone ? `https://wa.me/57${phone.replace(/\D/g, "")}` : "#";
+  c.innerHTML = `<h3 class="text-base font-display font-bold mb-4 text-center">${ui.contacto_titulo}</h3><div class="flex flex-col gap-2.5"><a href="${phone ? 'tel:' + phone : '#'}" class="flex items-center justify-center gap-2 w-full py-3 bg-brand hover:bg-brand-light text-white rounded-xl font-semibold text-sm transition-colors"><span class="material-symbols-outlined text-[20px]">call</span>${phone ? ui.contacto_llamar + ' ' + phone : ui.contacto_llamar}</a><a href="${email ? 'mailto:' + email : '#'}" class="flex items-center justify-center gap-2 w-full py-3 bg-surface border border-border hover:bg-border-light text-on-surface rounded-xl font-semibold text-sm transition-colors"><span class="material-symbols-outlined text-[20px]">mail</span>${ui.contacto_correo}</a><a href="${waHref}" target="_blank" rel="noopener" class="flex items-center justify-center gap-2 w-full py-3 bg-whatsapp hover:bg-whatsapp/90 text-white rounded-xl font-semibold text-sm transition-colors"><span class="material-symbols-outlined text-[20px]">chat</span>${ui.contacto_whatsapp}</a></div>`;
+}
 
-  const contactBuilding = $("#contact-building");
-  if (contactBuilding) contactBuilding.textContent = property.conjunto || "--";
-  const contactAdmin = $("#contact-admin");
-  if (contactAdmin) contactAdmin.textContent = property.administracion
-    ? formatCurrency(property.administracion)
-    : "--";
-};
-
-const renderMap = (property) => {
-  const address = [property.direccion, property.barrio, property.ciudad]
-    .filter(Boolean)
-    .join(", ");
-  const mapLink = $("#property-map");
-  const mapPreview = $("#property-map-preview");
-  const coords = property.latitud && property.longitud
-    ? `${property.latitud},${property.longitud}`
-    : null;
-
-  $("#property-address").textContent = address || "Dirección no disponible";
-
+// ── Map (Leaflet + CartoDB Positron) ──
+function renderMap(p, ui) {
+  const address = [p.direccion, p.conjunto ? `Conjunto ${p.conjunto}` : null, p.barrio, p.ciudad].filter(Boolean).join(", ");
+  const coords = p.latitud && p.longitud ? { lat: p.latitud, lon: p.longitud } : null;
   const mapUrl = coords
-    ? `https://www.google.com/maps/search/?api=1&query=${coords}`
+    ? `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lon}`
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
-  mapLink.href = mapUrl;
+  ["desktop", "mobile"].forEach((v) => {
+    const addrEl = $(`#map-address-${v}`);
+    const linkEl = $(`#map-link-${v}`);
+    const previewEl = $(`#map-preview-${v}`);
+    if (addrEl) addrEl.textContent = address || "";
+    if (linkEl) linkEl.href = mapUrl;
+    if (previewEl) {
+      if (coords) {
+        previewEl.innerHTML = "";
+        previewEl.id = `map-preview-${v}`;
+        const map = L.map(previewEl, { scrollWheelZoom: false, zoomControl: false, attributionControl: false }).setView([coords.lat, coords.lon], 16);
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+          maxZoom: 19
+        }).addTo(map);
+        // Custom marker with brand color + pulse animation
+        const markerIcon = L.divIcon({
+          className: "",
+          html: `<div style="position:relative;width:20px;height:20px;"><div style="position:absolute;inset:0;background:#0051d5;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3);z-index:2;"></div><div style="position:absolute;inset:-8px;background:#0051d5;border-radius:50%;opacity:0.3;animation:pulse-marker 2s ease-out infinite;"></div></div>`,
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        });
+        L.marker([coords.lat, coords.lon], { icon: markerIcon }).addTo(map);
+        // Add zoom control top-right
+        L.control.zoom({ position: "topright" }).addTo(map);
+      } else {
+        previewEl.innerHTML = `<p class="flex items-center justify-center h-full text-on-surface-muted text-sm">${ui.ubicacion_no_disponible}</p>`;
+      }
+    }
+  });
+}
 
-  if (coords) {
-    const [lat, lon] = coords.split(",");
-    const delta = 0.01;
-    const left = parseFloat(lon) - delta;
-    const right = parseFloat(lon) + delta;
-    const top = parseFloat(lat) + delta;
-    const bottom = parseFloat(lat) - delta;
-    const iframe = document.createElement("iframe");
-    iframe.src = `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${lat}%2C${lon}`;
-    iframe.loading = "lazy";
-    iframe.referrerPolicy = "no-referrer-when-downgrade";
-    iframe.title = "Mapa de ubicación";
-    iframe.style.border = "0";
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    mapPreview.innerHTML = "";
-    mapPreview.appendChild(iframe);
-  } else {
-    mapPreview.textContent = "Ubicación aproximada";
-  }
-};
-
-const normalizeProperty = (raw) => {
-  const property = raw?.property || raw?.data?.property || raw;
-  const details = property?.detalles_propiedad || {};
-  const images = Array.isArray(property?.images)
-    ? property.images
-        .slice()
-        .sort((a, b) => (a.order || 0) - (b.order || 0))
-        .map((img) => img.url || img)
+// ── Normalize ──
+function normalize(raw) {
+  const prop = raw?.property || raw?.data?.property || raw;
+  const det = prop?.detalles_propiedad || {};
+  const images = Array.isArray(prop?.images)
+    ? prop.images.slice().sort((a, b) => (a.order || 0) - (b.order || 0)).map((i) => i.url || i)
     : [];
-
   return {
-    titulo: property?.titulo,
-    descripcion: property?.descripcion,
-    url_360: property?.url_360,
+    titulo: prop?.titulo,
+    descripcion: prop?.descripcion,
+    url_360: prop?.url_360,
     images,
-    servicios: property?.servicios || [],
-    caracteristicas_propiedad: property?.caracteristicas_propiedad || [],
-    tipo_inmueble: details?.tipo_inmueble || property?.tipo_inmueble,
-    estrato: details?.estrato || property?.estrato,
-    conjunto: details?.conjunto || details?.conjunto_edificio || property?.conjunto,
-    direccion: details?.direccion || property?.direccion,
-    barrio: details?.barriocomun || property?.barrio,
-    ciudad: details?.ciudad || property?.ciudad,
-    departamento: details?.departamento || property?.departamento,
-    precio: details?.precio_venta ?? property?.precio,
-    precio_anterior: details?.precio_anterior ?? property?.precio_anterior,
-    area_privada: details?.area ?? property?.area_privada,
-    area_construida: details?.area_construida ?? property?.area_construida,
-    habitaciones: details?.num_habitaciones ?? property?.habitaciones,
-    banos: details?.baños ?? details?.banos ?? property?.banos,
-    parqueaderos: details?.parqueaderos ?? property?.parqueaderos,
-    antiguedad: details?.anos_antiguedad ?? property?.antiguedad,
-    telefono: details?.telefono || details?.contacto_zona || property?.telefono,
-    correo: details?.correo || property?.correo,
-    nombre_contacto: property?.nombre_contacto,
-    administracion: details?.last_admin_price ?? property?.administracion,
-    latitud: details?.latitud ?? property?.latitud,
-    longitud: details?.longitud ?? property?.longitud,
-    estado: property?.estado,
+    servicios: prop?.servicios || [],
+    destacados: prop?.destacados || [],
+    estrato: det?.estrato || prop?.estrato,
+    conjunto: det?.conjunto || det?.conjunto_edificio || prop?.conjunto,
+    direccion: det?.direccion || prop?.direccion,
+    barrio: det?.barriocomun || prop?.barrio,
+    ciudad: det?.ciudad || prop?.ciudad,
+    precio: det?.precio_venta ?? prop?.precio,
+    precio_anterior: det?.precio_anterior ?? prop?.precio_anterior,
+    area_privada: det?.area ?? prop?.area_privada,
+    habitaciones: det?.num_habitaciones ?? prop?.habitaciones,
+    banos: det?.baños ?? det?.banos ?? prop?.banos,
+    parqueaderos: det?.parqueaderos ?? prop?.parqueaderos,
+    piso: det?.num_piso ?? prop?.piso,
+    telefono: det?.telefono || det?.contacto_zona || prop?.telefono,
+    correo: det?.correo || prop?.correo,
+    latitud: det?.latitud ?? prop?.latitud,
+    longitud: det?.longitud ?? prop?.longitud,
   };
-};
+}
 
-const populatePage = (data) => {
-  const property = normalizeProperty(data);
+// ── Populate ──
+function populate(data) {
+  const raw = data?.data || data;
+  const ui = raw?.ui || {};
+  const p = normalize(data);
 
-  $("#property-title").textContent = property.titulo || "Inmueble en venta";
-  $("#property-location").textContent = [property.barrio, property.ciudad, property.departamento]
-    .filter(Boolean)
-    .join(" · ");
+  $("#hero-title").textContent = p.titulo || "";
+  $("#hero-location").textContent = [p.barrio, p.ciudad].filter(Boolean).join(", ");
+  const heroBadgeLabel = $("#hero-badge-label");
+  if (heroBadgeLabel && ui.hero_badge) heroBadgeLabel.textContent = ui.hero_badge;
 
-  $("#property-price").textContent = property.precio_anterior
-    ? formatCurrency(property.precio_anterior)
-    : formatCurrency(property.precio);
-  const pricePrev = $("#property-price-prev");
-  if (pricePrev) {
-    pricePrev.textContent = property.precio_anterior
-      ? formatCurrency(property.precio)
-      : "";
-  }
+  // Page title
+  const pageTitle = $("#page-title");
+  if (pageTitle) pageTitle.textContent = p.titulo || "";
 
-  $("#property-description").innerHTML = property.descripcion || "Sin descripción";
+  // Lightbox hint
+  const lbHint = $("#lb-hint");
+  if (lbHint && ui.lightbox_hint) lbHint.textContent = ui.lightbox_hint;
 
-  // Handle 360 tour button (main gallery)
-  const btn360Container = $("#btn-360-container");
-  const tour360 = $("#property-360");
-  const tour360Btn = $("#property-360-btn");
-  
-  if (property.url_360) {
-    if (btn360Container) {
-      btn360Container.style.display = "flex";
-      btn360Container.dataset.has360 = "true";
-    }
-    if (tour360) tour360.href = property.url_360;
-    if (tour360Btn) {
-      tour360Btn.href = property.url_360;
-      tour360Btn.style.display = "inline-flex";
-    }
-  } else {
-    if (btn360Container) {
-      btn360Container.style.display = "none";
-      btn360Container.dataset.has360 = "false";
-    }
-    if (tour360Btn) tour360Btn.style.display = "none";
-  }
+  renderHeroBadges(p, ui);
+  renderSectionTitles(ui);
+  renderPrice(p, ui);
+  renderGallery(p.images, ui);
+  $("#property-description").innerHTML = p.descripcion || "";
+  renderHighlights(p.destacados, ui);
+  renderFicha(p, ui);
+  renderGastos(p.servicios, ui);
+  renderTourMobile(p.url_360, ui);
+  renderSidebarTour(p.url_360, ui);
+  renderContact(p, ui);
+  renderMap(p, ui);
 
-  renderBadges(property);
-  renderGallery(property.images || []);
-  renderDetails(property);
-  renderDistribution(property);
-  renderFeatures(property.caracteristicas_propiedad || []);
-  renderServices(property.servicios || []);
-  renderContact(property);
-  renderMap(property);
+  $("#footer-copy").textContent = ui.footer ? ui.footer.replace("{year}", new Date().getFullYear()) : "";
+}
 
-};
-
-const loadData = async () => {
-  // Initialize lightbox
+// ── Init ──
+async function init() {
   initLightbox();
-
-  if (window.PROPERTY_DATA) {
-    populatePage(window.PROPERTY_DATA);
-    return;
-  }
-
+  if (window.PROPERTY_DATA) { populate(window.PROPERTY_DATA); return; }
   try {
-    const response = await fetch("./property-5157395.json");
-    if (!response.ok) {
-      const bodyText = await response.text().catch(() => null);
-      throw new Error(`HTTP ${response.status} ${response.statusText}${bodyText ? ' - ' + bodyText : ''}`);
-    }
-    const data = await response.json();
-    populatePage(data);
-  } catch (error) {
-    $("#property-title").textContent = "No se pudo cargar el inmueble";
-    $("#property-description").textContent = "Revisa que el archivo property-5157395.json esté disponible.";
-    $("#property-address").textContent = "Dirección no disponible";
+    const res = await fetch("./property-5157395.json");
+    if (!res.ok) throw new Error(res.status);
+    populate(await res.json());
+  } catch (e) {
+    // Can't show error text from JSON since JSON failed to load
+    $("#hero-title").textContent = "";
   }
-};
+}
 
-loadData();
+init();

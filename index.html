@@ -1,33 +1,36 @@
 <!DOCTYPE html>
-<html class="light" lang="es">
+<html lang="es">
 <head>
   <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Ficha Inmobiliaria</title>
-  <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Material+Icons+Outlined&amp;display=swap" rel="stylesheet"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title id="page-title"></title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="stylesheet" href="styles.css"/>
   <script>
     tailwind.config = {
-      darkMode: "class",
       theme: {
         extend: {
           colors: {
-            primary: "#2563eb",
-            "accent-teal": "#00f5d4",
-            "accent-gold": "#fbbf24",
-            "background-light": "#f8fafc",
-            "background-dark": "#0f172a",
-            "navy-deep": "#0a1128",
+            brand: "#0051d5",
+            "brand-light": "#316bf3",
+            "brand-surface": "#eef4ff",
+            "surface": "#f8f9ff",
+            "surface-alt": "#ffffff",
+            "on-surface": "#0b1c30",
+            "on-surface-secondary": "#46464d",
+            "on-surface-muted": "#76767e",
+            "border": "#e2e8f0",
+            "border-light": "#f1f5f9",
+            "whatsapp": "#25D366",
           },
           fontFamily: {
             display: ["Plus Jakarta Sans", "Inter", "sans-serif"],
             body: ["Inter", "sans-serif"],
-          },
-          borderRadius: {
-            DEFAULT: "0.75rem",
-            'xl': "1rem",
-            '2xl': "1.5rem",
           },
         },
       },
@@ -39,241 +42,145 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-B30BBB8XHP');
   </script>
-  <style type="text/tailwindcss">
-    body { font-family: 'Inter', sans-serif; }
-    .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
-    .glass-card {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    .dark .glass-card {
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .btn-360 {
-      background: linear-gradient(135deg, #00f5d4 0%, #00d1b2 100%);
-      box-shadow: 0 10px 25px -5px rgba(0, 245, 212, 0.4);
-    }
-    .btn-360:hover {
-      box-shadow: 0 15px 30px -5px rgba(0, 245, 212, 0.6);
-      transform: translateY(-2px);
-    }
-    .material-symbols-outlined {
-      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    }
-  </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 transition-colors duration-300">
-  <!-- Header -->
-  <header class="relative bg-navy-deep pt-12 pb-32 px-6 lg:px-12 overflow-hidden">
-    <div class="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-primary/20 to-transparent pointer-events-none"></div>
-    <div class="max-w-7xl mx-auto relative z-10">
-      <div class="flex flex-col md:flex-row justify-between items-start gap-6">
-        <div>
-          <span class="text-primary font-semibold tracking-wider text-sm uppercase mb-2 block">Ficha Inmobiliaria</span>
-          <h1 id="property-title" class="text-4xl md:text-5xl font-display font-extrabold text-white mb-4">Cargando inmueble...</h1>
-          <div class="flex items-center gap-2 text-slate-300">
-            <span class="material-icons-outlined text-sm">location_on</span>
-            <span id="property-location">--</span>
-          </div>
-          <div id="property-badges" class="flex flex-wrap gap-2 mt-6"></div>
-        </div>
-        <div class="bg-white/10 backdrop-blur-lg border border-white/20 p-6 rounded-2xl text-white min-w-[240px]">
-          <p class="text-slate-300 text-sm mb-1 uppercase tracking-tight">Precio de venta</p>
-          <p id="property-price" class="text-sm underline line-through text-slate-300 mb-2">--</p>
-          <p id="property-price-prev" class="text-3xl font-display font-bold"></p>
-        </div>
+<body class="bg-surface text-on-surface antialiased">
+
+  <!-- Hero -->
+  <header class="relative h-[70vh] min-h-[480px] w-full overflow-hidden flex items-end pb-14 px-4 md:px-10">
+    <img id="hero-image" alt="" class="absolute inset-0 w-full h-full object-cover scale-105" src=""/>
+    <div class="absolute inset-0 bg-gradient-to-br from-brand/30 to-transparent mix-blend-multiply"></div>
+    <div class="absolute inset-0 hero-overlay"></div>
+    <div class="relative max-w-[1280px] mx-auto w-full">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-4 py-1.5 rounded-full text-xs font-medium uppercase tracking-widest" id="hero-badge-label"></span>
+        <span class="text-white/70 flex items-center text-sm">
+          <span class="material-symbols-outlined mr-1 text-[16px]">location_on</span>
+          <span id="hero-location"></span>
+        </span>
       </div>
+      <h1 id="hero-title" class="text-[28px] md:text-[52px] font-display font-bold text-white mb-5 leading-tight tracking-tight"></h1>
+      <div class="flex flex-wrap gap-2" id="hero-badges"></div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-6 lg:px-12 -mt-20 pb-20 relative z-20">
+  <!-- Main -->
+  <main class="max-w-[1280px] mx-auto px-4 md:px-10 py-12">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
       <!-- Left Column -->
-      <div class="lg:col-span-8 space-y-8">
-        <!-- Gallery Section -->
-        <section class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl">
-          <div class="relative aspect-[16/9] w-full rounded-xl overflow-hidden mb-4 group">
-            <img id="gallery-main-image" alt="Imagen principal" class="w-full h-full object-cover" src=""/>
-            <div id="btn-360-container" class="absolute inset-0 flex items-center justify-center pointer-events-none" style="display: none;">
-              <a id="property-360" href="#" target="_blank" rel="noopener" class="btn-360 pointer-events-auto flex items-center gap-3 px-8 py-4 rounded-full text-slate-900 font-display font-extrabold text-lg uppercase tracking-widest transition-all duration-300 border-2 border-white/20">
-                <span class="material-symbols-outlined text-3xl">360</span>
-                Vista 360°
-              </a>
-            </div>
-            <!-- Navigation arrows on main image -->
-            <button id="gallery-main-prev" class="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors z-10">
-              <span class="material-icons-outlined">chevron_left</span>
-            </button>
-            <button id="gallery-main-next" class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors z-10">
-              <span class="material-icons-outlined">chevron_right</span>
-            </button>
-            <div id="gallery-count" class="absolute bottom-4 right-4 flex gap-2">
-              <span class="bg-black/50 backdrop-blur-md text-white px-3 py-1 rounded-lg text-xs font-medium flex items-center gap-1">
-                <span class="material-icons-outlined text-sm">photo_library</span>
-                <span id="photo-count">0</span> Fotos
-              </span>
+      <div class="lg:col-span-8 flex flex-col gap-8">
+
+        <!-- Price (mobile only) -->
+        <div class="lg:hidden bg-surface-alt rounded-2xl p-6 shadow-lg border border-border-light text-center" id="price-mobile"></div>
+
+        <!-- Tour (mobile only, right after price) -->
+        <section class="lg:hidden bg-surface-alt rounded-2xl p-6 shadow-lg border border-border-light text-center" id="tour-mobile"></section>
+
+        <!-- Gallery -->
+        <section>
+          <div class="gallery-grid" id="gallery-grid"></div>
+          <div class="gallery-mobile">
+            <div class="gallery-mobile-track" id="gallery-mobile-track"></div>
+            <div class="flex justify-center items-center gap-2 mt-3">
+              <span class="text-on-surface-muted text-xs" id="gallery-mobile-counter"></span>
+              <span class="text-on-surface-muted text-xs" id="gallery-desliza-label"></span>
             </div>
           </div>
-          <!-- Thumbnails with pagination -->
-          <div class="relative">
-            <div class="flex items-center gap-2">
-              <button id="thumb-prev" class="flex-shrink-0 p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                <span class="material-icons-outlined text-xl">chevron_left</span>
-              </button>
-              <div id="gallery-thumbnails" class="flex-1 grid grid-cols-4 md:grid-cols-8 gap-2"></div>
-              <button id="thumb-next" class="flex-shrink-0 p-2 rounded-full bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                <span class="material-icons-outlined text-xl">chevron_right</span>
-              </button>
-            </div>
-            <!-- Pagination dots -->
-            <div id="thumb-pagination" class="flex justify-center gap-2 mt-3"></div>
-          </div>
+          <div class="thumb-strip mt-1.5 hidden md:flex" id="gallery-thumbs"></div>
+          <button id="gallery-see-all" class="mt-3 w-full md:w-auto px-6 py-2.5 bg-surface-alt border border-border rounded-xl text-sm font-semibold text-on-surface hover:bg-border-light transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">grid_view</span>
+            <span id="gallery-see-all-text"></span>
+          </button>
         </section>
 
-        <!-- Description & Details -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <section class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-            <h3 class="text-xl font-display font-bold mb-4 flex items-center gap-2">
-              <span class="material-icons-outlined text-primary">description</span>
-              Descripción
-            </h3>
-            <div class="text-slate-600 dark:text-slate-400 leading-relaxed text-sm">
-              <p id="property-description">Sin descripción</p>
-            </div>
-            <a id="property-360-btn" href="#" target="_blank" rel="noopener" class="mt-6 flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-accent-teal text-slate-800 dark:text-accent-teal font-bold text-sm hover:bg-accent-teal hover:text-slate-900 transition-all" style="display: none;">
-              <span class="material-symbols-outlined text-xl">view_in_ar</span>
-              Explorar Tour Virtual
-            </a>
+        <!-- Description -->
+        <section class="bg-surface-alt rounded-2xl p-7 md:p-9 shadow-lg border border-border-light">
+          <h2 class="text-xl font-display font-bold mb-4 flex items-center gap-2" id="sec-descripcion-title"></h2>
+          <div class="text-on-surface-secondary leading-relaxed text-[15px]" id="property-description"></div>
+        </section>
+
+        <!-- Destacados + Ficha/Gastos -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <section class="bg-surface-alt rounded-2xl p-7 shadow-lg border border-border-light">
+            <h3 class="text-lg font-display font-bold mb-4 flex items-center gap-2" id="sec-destacados-title"></h3>
+            <div class="flex flex-col gap-2.5" id="property-highlights"></div>
           </section>
-          <section class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-            <h3 class="text-xl font-display font-bold mb-4 flex items-center gap-2">
-              <span class="material-icons-outlined text-primary">info</span>
-              Detalles principales
-            </h3>
-            <div id="property-details" class="space-y-4"></div>
-          </section>
+          <div class="flex flex-col gap-6">
+            <section class="bg-surface-alt rounded-2xl p-7 shadow-lg border border-border-light">
+              <h3 class="text-lg font-display font-bold mb-4 flex items-center gap-2" id="sec-ficha-title"></h3>
+              <div id="property-ficha"></div>
+            </section>
+            <section class="bg-surface-alt rounded-2xl p-7 shadow-lg border border-border-light">
+              <h3 class="text-lg font-display font-bold mb-4 flex items-center gap-2" id="sec-gastos-title"></h3>
+              <div id="property-gastos"></div>
+            </section>
+          </div>
         </div>
 
-        <!-- Features & Services -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <section class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-            <h3 class="text-xl font-display font-bold mb-6 flex items-center gap-2">
-              <span class="material-icons-outlined text-primary">auto_awesome</span>
-              Características
-            </h3>
-            <div id="property-features" class="flex flex-wrap gap-3"></div>
-          </section>
-          <section class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-            <h3 class="text-xl font-display font-bold mb-6 flex items-center gap-2">
-              <span class="material-icons-outlined text-primary">receipt_long</span>
-              Servicios estimados
-            </h3>
-            <div id="property-services" class="space-y-2"></div>
-          </section>
-        </div>
-
-        <!-- Distribution (hidden, keeping for compatibility) -->
-        <ul id="property-distribution" class="hidden"></ul>
-
-        <!-- Location -->
-        <section class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-display font-bold flex items-center gap-2">
-              <span class="material-icons-outlined text-primary">map</span>
-              Ubicación
-            </h3>
-            <a id="property-map" class="text-primary text-sm font-semibold flex items-center gap-1 hover:underline" href="#" target="_blank" rel="noopener">
-              Ver en Google Maps <span class="material-icons-outlined text-xs">open_in_new</span>
+        <!-- Map (desktop only) -->
+        <section class="bg-surface-alt rounded-2xl p-7 md:p-9 shadow-lg border border-border-light hidden lg:block" id="map-section-desktop">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-display font-bold flex items-center gap-2" id="sec-ubicacion-title-desktop"></h2>
+            <a id="map-link-desktop" class="text-brand font-semibold text-sm flex items-center gap-1 hover:underline" href="#" target="_blank" rel="noopener">
+              <span id="map-btn-text-desktop"></span> <span class="material-symbols-outlined text-[16px]">open_in_new</span>
             </a>
           </div>
-          <p id="property-address" class="text-slate-500 dark:text-slate-400 text-sm mb-4">Dirección no disponible</p>
-          <div id="property-map-preview" class="w-full h-[300px] bg-slate-200 dark:bg-slate-700 rounded-xl relative overflow-hidden"></div>
+          <p class="text-on-surface-secondary text-sm mb-4" id="map-address-desktop"></p>
+          <div class="w-full h-80 rounded-2xl overflow-hidden" id="map-preview-desktop"></div>
         </section>
       </div>
 
-      <!-- Right Column (Sidebar) -->
+      <!-- Right Sidebar -->
       <aside class="lg:col-span-4">
-        <div class="sticky top-8 space-y-6">
-          <!-- Contact Card -->
-          <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700">
-            <h3 class="text-xl font-display font-bold mb-6">Solicitar Información</h3>
-            <div class="space-y-3 mb-8">
-              <a id="contact-phone" class="flex items-center justify-center gap-2 w-full py-3.5 bg-primary hover:bg-blue-700 text-white rounded-xl font-semibold transition-all shadow-lg shadow-blue-500/20" href="#">
-                <span class="material-icons-outlined text-lg">call</span>
-                <span id="contact-phone-text">Llamar</span>
-              </a>
-              <a id="contact-email" class="flex items-center justify-center gap-2 w-full py-3.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-900 dark:text-white rounded-xl font-semibold transition-all" href="#">
-                <span class="material-icons-outlined text-lg">mail</span>
-                Enviar Correo
-              </a>
-              <a id="contact-whatsapp" class="flex items-center justify-center gap-2 w-full py-3.5 bg-[#25D366] hover:bg-[#1ebd5b] text-white rounded-xl font-semibold transition-all shadow-lg shadow-green-500/20" href="#" target="_blank" rel="noopener">
-                <span class="material-icons-outlined text-lg">chat</span>
-                WhatsApp
-              </a>
-            </div>
-            <div class="space-y-4 pt-6 border-t border-slate-100 dark:border-slate-700">
-              <div class="flex justify-between items-center">
-                <span class="text-slate-500 text-sm">Conjunto</span>
-                <span id="contact-building" class="font-semibold text-sm">--</span>
-              </div>
-            </div>
-          </div>
+        <div class="lg:sticky lg:top-4 flex flex-col gap-5">
+          <div class="bg-surface-alt rounded-2xl p-6 shadow-xl border border-border-light text-center hidden lg:block" id="sidebar-price-card"></div>
+          <div class="bg-surface-alt rounded-2xl p-6 shadow-xl border border-border-light text-center hidden lg:block" id="sidebar-tour"></div>
+          <div class="bg-surface-alt rounded-2xl p-6 shadow-xl border border-border-light" id="sidebar-contact"></div>
         </div>
       </aside>
+
     </div>
+
+    <!-- Map (mobile only, last) -->
+    <section class="bg-surface-alt rounded-2xl p-7 md:p-9 shadow-lg border border-border-light mt-10 lg:hidden" id="map-section-mobile">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-display font-bold flex items-center gap-2" id="sec-ubicacion-title-mobile"></h2>
+        <a id="map-link-mobile" class="text-brand font-semibold text-sm flex items-center gap-1 hover:underline" href="#" target="_blank" rel="noopener">
+          <span id="map-btn-text-mobile"></span> <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+        </a>
+      </div>
+      <p class="text-on-surface-secondary text-sm mb-4" id="map-address-mobile"></p>
+      <div class="w-full h-72 rounded-2xl overflow-hidden" id="map-preview-mobile"></div>
+    </section>
   </main>
 
   <!-- Footer -->
-  <footer class="max-w-7xl mx-auto px-6 lg:px-12 py-12 border-t border-slate-200 dark:border-slate-800 text-center text-slate-500 dark:text-slate-500 text-xs">
-    <p class="mt-2">© 2026 - Todos los derechos reservados.</p>
+  <footer class="max-w-[1280px] mx-auto px-4 md:px-10 py-10 border-t border-border text-center text-on-surface-muted text-xs">
+    <p id="footer-copy"></p>
   </footer>
 
-  <!-- Dark Mode Toggle -->
-  <button class="fixed bottom-6 left-6 p-3 rounded-full bg-white dark:bg-slate-800 shadow-2xl border border-slate-200 dark:border-slate-700 z-50" onclick="document.documentElement.classList.toggle('dark')">
-    <span class="material-icons-outlined block dark:hidden">dark_mode</span>
-    <span class="material-icons-outlined hidden dark:block">light_mode</span>
-  </button>
-
-  <!-- Lightbox Modal -->
-  <div id="lightbox" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm">
-    <button id="lightbox-close" class="absolute top-4 right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10">
-      <span class="material-icons-outlined text-2xl">close</span>
+  <!-- Lightbox -->
+  <div class="fixed inset-0 z-[100] hidden flex-col items-center justify-center bg-black/95" id="lightbox">
+    <button id="lb-close" class="absolute top-4 right-4 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white z-10">
+      <span class="material-symbols-outlined text-2xl">close</span>
     </button>
-    <button id="lightbox-prev" class="absolute left-4 top-1/2 -translate-y-1/2 p-3 md:p-4 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10">
-      <span class="material-icons-outlined text-2xl md:text-3xl">chevron_left</span>
+    <button id="lb-prev" class="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 p-3 md:p-4 rounded-full bg-white/15 hover:bg-white/25 text-white z-10 transition-colors">
+      <span class="material-symbols-outlined text-2xl md:text-3xl">chevron_left</span>
     </button>
-    <button id="lightbox-next" class="absolute right-4 top-1/2 -translate-y-1/2 p-3 md:p-4 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors z-10">
-      <span class="material-icons-outlined text-2xl md:text-3xl">chevron_right</span>
+    <button id="lb-next" class="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 p-3 md:p-4 rounded-full bg-white/15 hover:bg-white/25 text-white z-10 transition-colors">
+      <span class="material-symbols-outlined text-2xl md:text-3xl">chevron_right</span>
     </button>
-    <div class="relative max-w-[90vw] max-h-[70vh] md:max-h-[75vh] flex items-center justify-center">
-      <img id="lightbox-image" class="max-w-full max-h-[65vh] md:max-h-[70vh] object-contain rounded-lg shadow-2xl" src="" alt=""/>
-    </div>
-    <!-- Lightbox bottom controls -->
-    <div class="absolute bottom-4 md:bottom-6 left-0 right-0 flex flex-col items-center gap-3">
-      <!-- Thumbnails with pagination -->
-      <div class="flex items-center gap-2 max-w-[95vw] md:max-w-[80vw]">
-        <button id="lightbox-thumb-prev" class="flex-shrink-0 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-          <span class="material-icons-outlined">chevron_left</span>
-        </button>
-        <div id="lightbox-thumbnails" class="flex gap-2 p-2 bg-black/50 rounded-xl overflow-hidden"></div>
-        <button id="lightbox-thumb-next" class="flex-shrink-0 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-          <span class="material-icons-outlined">chevron_right</span>
-        </button>
-      </div>
-      <!-- Counter and pagination dots -->
-      <div class="flex items-center gap-3">
-        <span id="lightbox-counter" class="text-white/80 text-sm font-medium bg-black/50 px-4 py-2 rounded-full">1 / 10</span>
-        <div id="lightbox-pagination" class="flex gap-1.5"></div>
-      </div>
+    <img id="lb-img" class="max-w-[92vw] max-h-[70vh] object-contain rounded-xl" src="" alt=""/>
+    <div class="mt-4 flex flex-col items-center gap-3 w-full max-w-[90vw]">
+      <span id="lb-counter" class="bg-white/10 text-white/80 px-4 py-1.5 rounded-full text-sm font-medium"></span>
+      <div class="flex gap-2 overflow-x-auto py-2 px-1 max-w-full" id="lb-thumbs"></div>
+      <p class="text-white/40 text-xs md:hidden" id="lb-hint"></p>
     </div>
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="app.js" defer></script>
 </body>
 </html>
